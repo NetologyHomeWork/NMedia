@@ -29,7 +29,7 @@
         android:ellipsize="end"
         android:lines="1"
         android:textColor="@color/default_text_color"
-        android:text="@sample/post.json/data/author"
+        tools:text="@sample/post.json/data/author"
         app:layout_constraintBottom_toTopOf="@id/tv_date"
         app:layout_constraintEnd_toStartOf="@id/iv_more"
         app:layout_constraintStart_toEndOf="@id/iv_icon"
@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/content_max_margin"
         android:textColor="@color/default_text_color"
-        android:text="@sample/post.json/data/published"
+        tools:text="@sample/post.json/data/published"
         app:layout_constraintBottom_toBottomOf="@id/title_border"
         app:layout_constraintStart_toEndOf="@id/iv_icon"
         app:layout_constraintTop_toBottomOf="@id/tv_title" />
@@ -76,8 +76,7 @@
         android:layout_marginTop="@dimen/content_min_margin"
         android:padding="@dimen/layout_padding"
         android:textColor="@color/default_text_color"
-        style="@style/PostTextViewStyle"
-        android:text="@sample/post.json/data/content"
+        tools:text="@sample/post.json/data/content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title_border" />
