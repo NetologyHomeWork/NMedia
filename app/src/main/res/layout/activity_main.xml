@@ -18,11 +18,7 @@
         app:layout_constraintBottom_toTopOf="@id/title_border"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-<<<<<<< HEAD
         app:srcCompat="@drawable/ic_netology" />
-=======
-        app:srcCompat="@sample/post.json/data/authorAvatar" />
->>>>>>> layout
 
     <TextView
         android:id="@+id/tv_title"
@@ -33,11 +29,7 @@
         android:ellipsize="end"
         android:lines="1"
         android:textColor="@color/default_text_color"
-<<<<<<< HEAD
         tools:text="@sample/post.json/data/author"
-=======
-        android:text="@sample/post.json/data/author"
->>>>>>> layout
         app:layout_constraintBottom_toTopOf="@id/tv_date"
         app:layout_constraintEnd_toStartOf="@id/iv_more"
         app:layout_constraintStart_toEndOf="@id/iv_icon"
@@ -50,11 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/content_max_margin"
         android:textColor="@color/default_text_color"
-<<<<<<< HEAD
         tools:text="@sample/post.json/data/published"
-=======
-        android:text="@sample/post.json/data/published"
->>>>>>> layout
         app:layout_constraintBottom_toBottomOf="@id/title_border"
         app:layout_constraintStart_toEndOf="@id/iv_icon"
         app:layout_constraintTop_toBottomOf="@id/tv_title" />
@@ -88,12 +76,7 @@
         android:layout_marginTop="@dimen/content_min_margin"
         android:padding="@dimen/layout_padding"
         android:textColor="@color/default_text_color"
-<<<<<<< HEAD
         tools:text="@sample/post.json/data/content"
-=======
-        style="@style/PostTextViewStyle"
-        android:text="@sample/post.json/data/content"
->>>>>>> layout
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title_border" />
