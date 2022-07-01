@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="layout_padding">8dp</dimen>
+    <dimen name="avatar_ratio">48dp</dimen>
+    <dimen name="content_min_margin">8dp</dimen>
+    <dimen name="content_max_margin">16dp</dimen>
+    <dimen name="height_view">1dp</dimen>
+</resources>
