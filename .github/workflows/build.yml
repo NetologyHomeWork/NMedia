@@ -20,7 +20,7 @@ jobs:
           ./gradlew build
 
       - name: Run Test
-        run: npm run test
+        run: test
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v2
