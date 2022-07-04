@@ -8,8 +8,8 @@ class MainViewModel : ViewModel() {
 
     val data = repository.getData()
 
-    fun like() = repository.like()
+    fun like(post: Post) = repository.like(post)
 
-    fun share() = repository.share()
+    fun share(post: Post) = repository.share(post)
 
 }
