@@ -39,6 +39,7 @@ class PostRepositoryImpl : PostRepository {
         )
         postList.remove(post)
         postList.add(newPost)
+        updateList()
     }
 
 
@@ -48,5 +49,10 @@ class PostRepositoryImpl : PostRepository {
         )
         postList.remove(post)
         postList.add(newPost)
+        updateList()
+    }
+
+    private fun updateList() {
+        data.value = postList.toList()
     }
 }
