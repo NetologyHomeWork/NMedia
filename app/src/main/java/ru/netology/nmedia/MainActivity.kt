@@ -21,9 +21,9 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.data.observe(this) {
             binding.apply {
                 ivIcon.setImageResource(it.authorAvatar)
-                tvTitle.text = getString(it.author)
-                tvDate.text = getString(it.published)
-                tvPost.text = getString(it.content)
+                tvTitle.text = it.author
+                tvDate.text = it.published
+                tvPost.text = it.content
                 tvLikeCount.text = formatCount(it.likesCount)
                 tvShareCount.text = formatCount(it.shareCount)
                 tvViewsCount.text = formatCount(it.viewsCount)

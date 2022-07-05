@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 class PostRepositoryImpl : PostRepository {
 
     private val post = Post(
-        author = R.string.post_author,
-        published = R.string.post_published,
-        content = R.string.post_content,
+        author = "Нетология. Университет интернет-профессий будущего",
+        published = "21 мая в 18:36",
+        content = "Привет, это новая Нетология! Когда-то Нетология начиналась с интенсивов по онлайн-маркетингу. Затем появились курсы по дизайну, разработке, аналитике и управлению. Мы растём сами и помогаем расти студентам: от новичков до уверенных профессионалов. Но самое важное остаётся с нами: мы верим, что в каждом уже есть сила, которая заставляет хотеть больше, целиться выше, бежать быстрее. Наша миссия — помочь встать на путь роста и начать цепочку перемен → http://netolo.gy/fyb",
         authorAvatar = R.drawable.ic_netology,
         shareCount = 5,
         likesCount = 10,
