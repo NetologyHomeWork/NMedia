@@ -1,6 +1,7 @@
 package ru.netology.nmedia
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import ru.netology.nmedia.databinding.ActivityMainBinding
 
@@ -10,37 +11,33 @@ class MainActivity : AppCompatActivity() {
     private val binding: ActivityMainBinding
         get() = _binding ?: throw RuntimeException("ActivityMainBinding is null")
 
+    private val mainViewModel by viewModels<MainViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val post = Post(
-            author = getString(R.string.post_author),
-            published = getString(R.string.post_published),
-            content = getString(R.string.post_content),
-            authorAvatar = R.drawable.ic_netology,
-            shareCount = 5,
-            likesCount = 10,
-            viewsCount = 50
-        )
+        mainViewModel.data.observe(this) {
+            binding.apply {
+                ivIcon.setImageResource(it.authorAvatar)
+                tvTitle.text = it.author
+                tvDate.text = it.published
+                tvPost.text = it.content
+                tvLikeCount.text = formatCount(it.likesCount)
+                tvShareCount.text = formatCount(it.shareCount)
+                tvViewsCount.text = formatCount(it.viewsCount)
+                ivLike.setImageResource(
+                    if (it.isLike) R.drawable.ic_favorite_24 else R.drawable.ic_favorite_border_24
+                )
 
-        binding.apply {
-            ivIcon.setImageResource(post.authorAvatar)
-            tvTitle.text = post.author
-            tvDate.text = post.published
-            tvPost.text = post.content
-            tvLikeCount.text = formatCount(post.likesCount)
-            tvShareCount.text = formatCount(post.shareCount)
-            tvViewsCount.text = formatCount(post.viewsCount)
+                ivLike.setOnClickListener {
+                    mainViewModel.like()
+                }
 
-            ivLike.setOnClickListener {
-                liked(post)
-            }
-
-            ivShare.setOnClickListener {
-                post.shareCount++
-                tvShareCount.text = formatCount(post.shareCount)
+                ivShare.setOnClickListener {
+                    mainViewModel.share()
+                }
             }
         }
     }
@@ -48,18 +45,5 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-    }
-
-    private fun liked(post: Post) {
-        if (!post.isLike){
-            binding.ivLike.setImageResource(R.drawable.ic_favorite_24)
-            post.likesCount++
-        }
-        else {
-            binding.ivLike.setImageResource(R.drawable.ic_favorite_border_24)
-            post.likesCount--
-        }
-        binding.tvLikeCount.text = formatCount(post.likesCount)
-        post.isLike = !post.isLike
     }
 }
