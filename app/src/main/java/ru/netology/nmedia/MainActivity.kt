@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         val rvPostItem = binding.rvPostList
-        val adapter = MainAdapter(this)
+        val adapter = MainAdapter()
         rvPostItem.adapter = adapter
         adapter.onClickLike = {
             mainViewModel.like(it)

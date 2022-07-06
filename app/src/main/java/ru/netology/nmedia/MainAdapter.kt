@@ -7,9 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.databinding.PostItemBinding
 
-class MainAdapter(
-    private val context: Context
-) : ListAdapter<Post, MainAdapter.MainViewHolder>(PostItemDiffUtil()) {
+class MainAdapter() : ListAdapter<Post, MainAdapter.MainViewHolder>(PostItemDiffUtil()) {
 
     inner class MainViewHolder(
         private val binding: PostItemBinding
@@ -40,9 +38,9 @@ class MainAdapter(
     private fun bindLayout(binding: PostItemBinding, post: Post) {
         binding.apply {
             ivIcon.setImageResource(post.authorAvatar)
-            tvTitle.text = context.getString(post.author)
-            tvDate.text = context.getString(post.published)
-            tvPost.text = context.getString(post.content)
+            tvTitle.text = post.author
+            tvDate.text = post.published
+            tvPost.text = post.content
             tvLikeCount.text = formatCount(post.likesCount)
             tvShareCount.text = formatCount(post.shareCount)
             tvViewsCount.text = formatCount(post.viewsCount)

@@ -1,12 +1,10 @@
 package ru.netology.nmedia
 
-import androidx.annotation.StringRes
-
 data class Post(
     val id: Int = 1,
-    @StringRes val author: Int,
-    @StringRes val content: Int,
-    @StringRes val published: Int,
+    val author: String,
+    val content: String,
+    val published: String,
     val authorAvatar: Int,
     val isLike: Boolean = false,
     val shareCount: Int = 0,

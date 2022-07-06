@@ -83,7 +83,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title_border"
-            tools:text="@sample/post.json/data/content" />
+            tools:text="@sample/post.json/data/content"
+            android:autoLink="web" />
 
         <View
             android:id="@+id/main_border"
