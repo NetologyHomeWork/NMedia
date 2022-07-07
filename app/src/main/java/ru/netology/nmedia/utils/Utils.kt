@@ -1,5 +1,8 @@
 package ru.netology.nmedia
 
+import android.content.Context
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -27,5 +30,18 @@ private fun formatNumber(count: Int, delimiter: Double, bigDecimalDelimiter: Big
         }
         else stringDecimal
     }
+}
+
+fun showKeyboard(view: View) {
+    getInputMethodManager(view).showSoftInput(view, 0)
+}
+
+fun hideKeyboard(view: View) {
+    getInputMethodManager(view).hideSoftInputFromWindow(view.windowToken, 0)
+}
+
+private fun getInputMethodManager(view: View): InputMethodManager {
+    val context = view.context
+    return context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 }
 

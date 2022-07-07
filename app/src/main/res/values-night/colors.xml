@@ -8,4 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="default_text_color">#FFFFFFFF</color>
+    <color name="default_post_editor_background">#FF424242</color>
+    <color name="default_message_editor_background">#FF000000</color>
 </resources>

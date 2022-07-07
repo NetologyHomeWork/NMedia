@@ -7,6 +7,7 @@ import androidx.test.filters.LargeTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import ru.netology.nmedia.activity.MainActivity
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)

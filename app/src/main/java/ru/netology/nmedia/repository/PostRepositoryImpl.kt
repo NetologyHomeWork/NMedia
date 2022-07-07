@@ -1,10 +1,12 @@
-package ru.netology.nmedia
+package ru.netology.nmedia.repository
 
 import androidx.lifecycle.MutableLiveData
+import ru.netology.nmedia.model.Post
+import ru.netology.nmedia.R
 
 class PostRepositoryImpl : PostRepository {
 
-    private val postList = sortedSetOf<Post>({o1, o2 -> o2.id.compareTo(o1.id)})
+    private val postList = sortedSetOf<Post>({ o1, o2 -> o2.id.compareTo(o1.id)})
 
     init {
         postList.addAll(
@@ -138,6 +140,18 @@ class PostRepositoryImpl : PostRepository {
 
     override fun removeItem(id: Long) {
         postList.remove(findPostById(id))
+        updateList()
+    }
+
+    override fun savePost(post: Post) {
+        if (post.id == 0L) {
+            val newPost = post.copy(id = postList.first().id + 1)
+            postList.add(newPost)
+        } else {
+            val newPost = post.copy(content = post.content)
+            postList.remove(post)
+            postList.add(newPost)
+        }
         updateList()
     }
 

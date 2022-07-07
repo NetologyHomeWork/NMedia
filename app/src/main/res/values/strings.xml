@@ -7,4 +7,9 @@
     <string name="views">Views</string>
     <string name="more">More Action</string>
     <string name="remove">Remove</string>
+    <string name="write_something">Write something…</string>
+    <string name="send_post">Send Post</string>
+    <string name="edit">Edit</string>
+    <string name="edit_message">Edit Message</string>
+    <string name="empty_content">Content can\'t be empty</string>
 </resources>

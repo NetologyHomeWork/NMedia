@@ -1,6 +1,7 @@
-package ru.netology.nmedia
+package ru.netology.nmedia.rvadapter
 
 import androidx.recyclerview.widget.DiffUtil
+import ru.netology.nmedia.model.Post
 
 class PostItemDiffUtil : DiffUtil.ItemCallback<Post>() {
 
