@@ -32,6 +32,26 @@ class MainActivity : AppCompatActivity() {
         }
         mainViewModel.data.observe(this) {
             adapter.submitList(it)
+            binding.apply {
+                ivIcon.setImageResource(it.authorAvatar)
+                tvTitle.text = it.author
+                tvDate.text = it.published
+                tvPost.text = it.content
+                tvLikeCount.text = formatCount(it.likesCount)
+                tvShareCount.text = formatCount(it.shareCount)
+                tvViewsCount.text = formatCount(it.viewsCount)
+                ivLike.setImageResource(
+                    if (it.isLike) R.drawable.ic_favorite_24 else R.drawable.ic_favorite_border_24
+                )
+
+                ivLike.setOnClickListener {
+                    mainViewModel.like()
+                }
+
+                ivShare.setOnClickListener {
+                    mainViewModel.share()
+                }
+            }
         }
     }
 
