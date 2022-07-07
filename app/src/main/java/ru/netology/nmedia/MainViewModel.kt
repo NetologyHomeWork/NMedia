@@ -12,4 +12,5 @@ class MainViewModel : ViewModel() {
 
     fun share(post: Post) = repository.share(post)
 
+    fun deletePost(id: Long) = repository.removeItem(id)
 }

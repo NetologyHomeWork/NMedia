@@ -30,6 +30,11 @@ class MainActivity : AppCompatActivity() {
         adapter.onClickShare = {
             mainViewModel.share(it)
         }
+
+        adapter.onClickDelete = {
+            mainViewModel.deletePost(it.id)
+        }
+
         mainViewModel.data.observe(this) {
             adapter.submitList(it)
         }

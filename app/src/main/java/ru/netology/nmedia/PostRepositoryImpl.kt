@@ -136,7 +136,16 @@ class PostRepositoryImpl : PostRepository {
         updateList()
     }
 
+    override fun removeItem(id: Long) {
+        postList.remove(findPostById(id))
+        updateList()
+    }
+
     private fun updateList() {
         data.value = postList.toList()
+    }
+
+    private fun findPostById(id: Long): Post {
+        return postList.find { it.id == id } ?: throw RuntimeException("Post not found")
     }
 }
