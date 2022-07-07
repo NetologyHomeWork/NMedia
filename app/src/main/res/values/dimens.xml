@@ -5,4 +5,7 @@
     <dimen name="content_min_margin">8dp</dimen>
     <dimen name="content_max_margin">16dp</dimen>
     <dimen name="height_view">1dp</dimen>
+    <dimen name="card_corner_radius">8dp</dimen>
+    <dimen name="card_padding">8dp</dimen>
+    <dimen name="card_elevation">8dp</dimen>
 </resources>
