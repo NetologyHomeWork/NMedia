@@ -47,4 +47,9 @@ class MainViewModel : ViewModel() {
         }
         _edited.value = _edited.value?.copy(content = text)
     }
+
+    fun editingClear() {
+        _edited.value = empty
+    }
+
 }

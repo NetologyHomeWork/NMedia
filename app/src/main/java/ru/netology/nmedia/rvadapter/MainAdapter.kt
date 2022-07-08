@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostItemBinding
-import ru.netology.nmedia.formatCount
+import ru.netology.nmedia.utils.formatCount
 
 class MainAdapter(
     private val listener: AdapterListener

@@ -10,6 +10,8 @@ import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.rvadapter.AdapterListener
 import ru.netology.nmedia.rvadapter.MainAdapter
+import ru.netology.nmedia.utils.hideKeyboard
+import ru.netology.nmedia.utils.showKeyboard
 import ru.netology.nmedia.viewmodel.MainViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -93,6 +95,7 @@ class MainActivity : AppCompatActivity() {
                     editLayout.visibility = View.GONE
                     etEditPost.setText("")
                     hideKeyboard(it)
+                    mainViewModel.editingClear()
                 }
             }
         }
