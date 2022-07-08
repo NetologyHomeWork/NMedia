@@ -93,6 +93,7 @@ class MainActivity : AppCompatActivity() {
                     editLayout.visibility = View.GONE
                     etEditPost.setText("")
                     hideKeyboard(it)
+                    mainViewModel.editingClear()
                 }
             }
         }
