@@ -148,7 +148,7 @@ class PostRepositoryImpl : PostRepository {
             val newPost = post.copy(id = postList.first().id + 1)
             postList.add(newPost)
         } else {
-            val newPost = post.copy(content = post.content)
+            val newPost = findPostById(post.id)?.copy(content = post.content) ?: return
             postList.remove(post)
             postList.add(newPost)
         }
@@ -159,7 +159,7 @@ class PostRepositoryImpl : PostRepository {
         data.value = postList.toList()
     }
 
-    private fun findPostById(id: Long): Post {
-        return postList.find { it.id == id } ?: throw RuntimeException("Post not found")
+    private fun findPostById(id: Long): Post? {
+        return postList.find { it.id == id }
     }
 }
