@@ -1,13 +1,19 @@
-package ru.netology.nmedia
+package ru.netology.nmedia.rvadapter
 
-import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import ru.netology.nmedia.model.Post
+import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostItemBinding
+import ru.netology.nmedia.utils.formatCount
 
-class MainAdapter() : ListAdapter<Post, MainAdapter.MainViewHolder>(PostItemDiffUtil()) {
+class MainAdapter(
+    private val listener: AdapterListener
+) : ListAdapter<Post, MainAdapter.MainViewHolder>(PostItemDiffUtil()) {
 
     inner class MainViewHolder(
         private val binding: PostItemBinding
@@ -18,8 +24,7 @@ class MainAdapter() : ListAdapter<Post, MainAdapter.MainViewHolder>(PostItemDiff
         }
     }
 
-    var onClickLike: ((Post) -> Unit)? = null
-    var onClickShare: ((Post) -> Unit)? = null
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         val binding = PostItemBinding.inflate(
@@ -49,13 +54,36 @@ class MainAdapter() : ListAdapter<Post, MainAdapter.MainViewHolder>(PostItemDiff
             )
 
             ivLike.setOnClickListener {
-                onClickLike?.invoke(post)
+                listener.onClickLike(post)
             }
 
             ivShare.setOnClickListener {
-                onClickShare?.invoke(post)
+                listener.onClickShare(post)
+            }
+
+            ivMore.setOnClickListener {
+                showMenu(it, post)
             }
         }
+    }
+
+    private fun showMenu(view: View, post: Post) {
+        PopupMenu(view.context, view).apply {
+            inflate(R.menu.post_options)
+            setOnMenuItemClickListener { item ->
+                when(item.itemId) {
+                    R.id.remove -> {
+                        listener.onClickDelete(post)
+                        true
+                    }
+                    R.id.item_edit -> {
+                        listener.onClickEdit(post)
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }.show()
     }
 }
 

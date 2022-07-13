@@ -12,6 +12,14 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="android:textColor">@color/default_text_color</item>
+        <item name="android:itemBackground">@color/default_post_editor_background</item>
+        <item name="android:dropDownListViewStyle">@style/PopMenuDivider</item>
+
     </style>
 
+    <style name="PopMenuDivider">
+        <item name="android:divider">@color/default_text_color</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
 </resources>

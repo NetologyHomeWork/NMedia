@@ -7,4 +7,10 @@
     <string name="share">Поделиться</string>
     <string name="views">Просмотры</string>
     <string name="more">Больше действий</string>
+    <string name="remove">Удалить</string>
+    <string name="write_something">Напиши что-нибудь…</string>
+    <string name="send_post">Отправить пост</string>
+    <string name="edit">Редактировать пост</string>
+    <string name="edit_message">Редактировать</string>
+    <string name="empty_content">Содержимое поста не может быть пустым</string>
 </resources>

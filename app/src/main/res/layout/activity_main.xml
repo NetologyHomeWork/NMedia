@@ -5,18 +5,127 @@
     style="@style/Theme.NMedia"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".activity.MainActivity">
 
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_post_list"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/undefined_size"
+        android:layout_marginBottom="@dimen/content_min_margin"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@id/til_post"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:reverseLayout="true"
+        tools:listitem="@layout/post_item" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/til_post"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/card_padding"
+        android:layout_marginEnd="@dimen/card_padding"
+        android:layout_marginBottom="@dimen/card_padding"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:padding="@dimen/layout_padding"
+        android:elevation="@dimen/card_elevation"
+        android:background="@color/default_post_editor_background" >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/edit_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/default_post_editor_background"
+        app:layout_constraintBottom_toTopOf="@id/et_edit_post"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/post_item" />
+        android:padding="8dp"
+        android:visibility="gone" >
+
+        <ImageView
+            android:id="@+id/iv_pencil"
+            android:layout_width="@dimen/icon_send_size"
+            android:layout_height="@dimen/icon_send_size"
+            app:layout_constraintTop_toTopOf="@id/edit_border"
+            app:layout_constraintBottom_toBottomOf="@id/edit_border"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/ic_pencil_24" />
+
+            <View
+                android:id="@+id/edit_border"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:background="@color/cursor_color"
+                app:layout_constraintWidth="2dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iv_pencil"
+                android:layout_marginStart="8dp" />
+
+            <TextView
+                android:id="@+id/edit_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/edit_border"
+                android:layout_marginStart="8dp"
+                android:text="@string/edit_message"
+                android:textColor="@color/cursor_color" />
+
+            <TextView
+                android:id="@+id/edit_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:lines="1"
+                android:textColor="@color/default_text_color"
+                tools:text="@sample/post.json/data/author"
+                app:layout_constraintTop_toBottomOf="@id/edit_label"
+                app:layout_constraintStart_toEndOf="@id/edit_border"
+                app:layout_constraintEnd_toStartOf="@id/edit_close"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="8dp" />
+
+            <ImageView
+                android:id="@+id/edit_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_close_24" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        <EditText
+            android:id="@+id/et_edit_post"
+            android:layout_width="@dimen/undefined_size"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/content_min_margin"
+            android:background="@drawable/edit_text_background"
+            android:hint="@string/write_something"
+            android:padding="@dimen/card_padding"
+            android:textSize="@dimen/editor_post_text_size"
+            android:inputType="textAutoCorrect|textAutoComplete|textMultiLine"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ic_send"
+            app:layout_constraintStart_toStartOf="parent"
+            android:textCursorDrawable="@drawable/et_cursor" />
+
+        <ImageView
+            android:id="@+id/ic_send"
+            android:layout_width="@dimen/icon_send_size"
+            android:layout_height="@dimen/icon_send_size"
+            app:srcCompat="@drawable/ic_send_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:contentDescription="@string/send_post" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
