@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostItemBinding
+import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.utils.formatCount
 
 class MainAdapter(
@@ -46,18 +46,16 @@ class MainAdapter(
             tvTitle.text = post.author
             tvDate.text = post.published
             tvPost.text = post.content
-            tvLikeCount.text = formatCount(post.likesCount)
-            tvShareCount.text = formatCount(post.shareCount)
+            cbLike.text = formatCount(post.likesCount)
+            buttonShare.text = formatCount(post.shareCount)
             tvViewsCount.text = formatCount(post.viewsCount)
-            ivLike.setImageResource(
-                if (post.isLike) R.drawable.ic_favorite_24 else R.drawable.ic_favorite_border_24
-            )
+            cbLike.isChecked = post.isLike
 
-            ivLike.setOnClickListener {
+            cbLike.setOnClickListener {
                 listener.onClickLike(post)
             }
 
-            ivShare.setOnClickListener {
+            buttonShare.setOnClickListener {
                 listener.onClickShare(post)
             }
 
