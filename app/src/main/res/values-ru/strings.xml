@@ -13,4 +13,6 @@
     <string name="edit">Редактировать пост</string>
     <string name="edit_message">Редактировать</string>
     <string name="empty_content">Содержимое поста не может быть пустым</string>
+    <string name="save">Сохранить</string>
+    <string name="add_new_post">Добавить новый пост</string>
 </resources>

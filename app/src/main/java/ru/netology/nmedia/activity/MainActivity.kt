@@ -1,8 +1,10 @@
 package ru.netology.nmedia.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.launch
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import ru.netology.nmedia.*
@@ -26,24 +28,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
             .also { setContentView(it.root) }
+        val newPostLauncher = registerForActivityResult(NewPostActivityContract()) {
+            it ?: return@registerForActivityResult
+            mainViewModel.editedContent(it)
+            mainViewModel.save()
+        }
         setupRecyclerView()
-        binding.icSend.setOnClickListener {
-            binding.etEditPost.apply {
-                if (text.isNullOrBlank()) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        R.string.empty_content,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
-                mainViewModel.editedContent(text.toString())
-                mainViewModel.save()
-                setText("")
-                clearFocus()
-                binding.editLayout.visibility = View.GONE
-                hideKeyboard(it)
-            }
+        binding.buttonAdd.setOnClickListener {
+            newPostLauncher.launch()
         }
     }
 
@@ -56,7 +48,9 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onClickShare(post: Post) {
-                    mainViewModel.share(post)
+                    val intent = mainViewModel.share(post)
+                    val shareIntent = Intent.createChooser(intent, getString(R.string.share))
+                    startActivity(shareIntent)
                 }
 
                 override fun onClickDelete(post: Post) {
@@ -82,7 +76,7 @@ class MainActivity : AppCompatActivity() {
             if (postObserve.id == 0L) {
                 return@observe
             }
-            binding.etEditPost.apply {
+            /*binding.etEditPost.apply {
                 requestFocus()
                 setText(postObserve.content.trim())
                 text?.length?.let { setSelection(it) }
@@ -97,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                     hideKeyboard(it)
                     mainViewModel.editingClear()
                 }
-            }
+            }*/
         }
     }
 

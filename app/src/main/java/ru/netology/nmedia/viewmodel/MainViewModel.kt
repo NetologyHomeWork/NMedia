@@ -1,5 +1,6 @@
 package ru.netology.nmedia.viewmodel
 
+import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,7 +26,7 @@ class MainViewModel : ViewModel() {
 
     fun like(post: Post) = repository.like(post)
 
-    fun share(post: Post) = repository.share(post)
+    fun share(post: Post): Intent = repository.share(post)
 
     fun deletePost(id: Long) = repository.removeItem(id)
 

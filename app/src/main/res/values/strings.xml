@@ -12,4 +12,6 @@
     <string name="edit">Edit</string>
     <string name="edit_message">Edit Message</string>
     <string name="empty_content">Content can\'t be empty</string>
+    <string name="save">Save</string>
+    <string name="add_new_post">Add New Post</string>
 </resources>

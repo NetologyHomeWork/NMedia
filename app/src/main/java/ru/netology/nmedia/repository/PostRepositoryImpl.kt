@@ -1,8 +1,10 @@
 package ru.netology.nmedia.repository
 
+import android.content.Intent
 import androidx.lifecycle.MutableLiveData
-import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.R
+import ru.netology.nmedia.model.Post
+import ru.netology.nmedia.utils.Constants
 
 class PostRepositoryImpl : PostRepository {
 
@@ -129,13 +131,15 @@ class PostRepositoryImpl : PostRepository {
     }
 
 
-    override fun share(post: Post) {
+    override fun share(post: Post): Intent {
         val newPost = post.copy(
             shareCount = post.shareCount + 1
         )
         postList.remove(post)
         postList.add(newPost)
         updateList()
+
+        return sendIntent(post)
     }
 
     override fun removeItem(id: Long) {
@@ -161,5 +165,13 @@ class PostRepositoryImpl : PostRepository {
 
     private fun findPostById(id: Long): Post? {
         return postList.find { it.id == id }
+    }
+
+    private fun sendIntent(post: Post) : Intent {
+        return Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, post.content)
+            type = "text/plain"
+        }
     }
 }
