@@ -20,10 +20,5 @@
         <item name="android:dropDownListViewStyle">@style/PopMenuDivider</item>
     </style>
 
-    <style name="PopMenuDivider" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
-        <item name="itemBackground">@color/default_post_editor_background</item>
-        <item name="android:divider">@color/default_text_color</item>
-        <item name="android:dividerHeight">1dp</item>
-        <item name="popupTheme">@color/default_post_editor_background</item>
-    </style>
+
 </resources>
