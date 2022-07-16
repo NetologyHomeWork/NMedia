@@ -19,8 +19,6 @@ class MainViewModel : ViewModel() {
 
     private val repository: PostRepository = PostRepositoryImpl()
     private val _edited = MutableLiveData(empty)
-    val edited: LiveData<Post>
-        get() = _edited
 
     val data = repository.getData()
 
