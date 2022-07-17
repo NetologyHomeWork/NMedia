@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="LikeCheckBox" parent="Widget.Material3.CompoundButton.CheckBox" >
+        <item name="buttonTint">@color/checkbox_like_tint</item>
+        <item name="android:textSize">@dimen/like_checkbox_text_size</item>
+    </style>
+
+    <style name="ShareButton" parent="Widget.MaterialComponents.Button.TextButton.Icon">
+        <item name="android:textColor">@color/default_text_color</item>
+        <item name="iconTint">@color/default_text_color</item>
+        <item name="rippleColor">@android:color/transparent</item>
+        <item name="iconPadding">8dp</item>
+        <item name="iconGravity">textStart</item>
+    </style>
+
+    <style name="PopMenuDivider" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
+        <item name="itemBackground">@color/default_post_editor_background</item>
+        <item name="android:divider">@color/default_text_color</item>
+        <item name="android:dividerHeight">1dp</item>
+        <item name="popupTheme">@color/default_post_editor_background</item>
+    </style>
+</resources>

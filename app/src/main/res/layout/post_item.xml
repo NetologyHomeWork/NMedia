@@ -97,46 +97,31 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_post" />
 
-        <ImageView
-            android:id="@+id/iv_like"
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cb_like"
+            style="@style/LikeCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/content_max_margin"
             android:contentDescription="@string/like"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/main_border"
-            app:srcCompat="@drawable/ic_favorite_border_24" />
+            android:button="@drawable/ic_like_checked"
+            tools:text="10"
+            android:paddingLeft="@dimen/checkbox_padding"
+            android:paddingRight="@dimen/checkbox_padding" />
 
-        <TextView
-            android:id="@+id/tv_like_count"
+        <Button
+            android:id="@+id/button_share"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/content_min_margin"
-            app:layout_constraintBottom_toBottomOf="@id/iv_like"
-            app:layout_constraintStart_toEndOf="@id/iv_like"
-            app:layout_constraintTop_toTopOf="@id/iv_like"
-            tools:text="10" />
-
-        <ImageView
-            android:id="@+id/iv_share"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/content_max_margin"
             android:contentDescription="@string/share"
-            app:layout_constraintBottom_toBottomOf="@id/iv_like"
-            app:layout_constraintStart_toEndOf="@id/tv_like_count"
-            app:layout_constraintTop_toTopOf="@id/iv_like"
-            app:srcCompat="@drawable/ic_share_24" />
-
-        <TextView
-            android:id="@+id/tv_share_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/content_min_margin"
-            app:layout_constraintBottom_toBottomOf="@id/iv_share"
-            app:layout_constraintStart_toEndOf="@id/iv_share"
-            app:layout_constraintTop_toTopOf="@id/iv_share"
-            tools:text="5" />
+            app:layout_constraintBottom_toBottomOf="@id/cb_like"
+            app:layout_constraintStart_toEndOf="@id/cb_like"
+            app:layout_constraintTop_toTopOf="@id/cb_like"
+            app:icon="@drawable/ic_share_24"
+            tools:text="5"
+            style="@style/ShareButton" />
 
         <ImageView
             android:id="@+id/iv_views"
@@ -144,9 +129,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/content_min_margin"
             android:contentDescription="@string/views"
-            app:layout_constraintBottom_toBottomOf="@id/iv_share"
+            app:layout_constraintBottom_toBottomOf="@id/button_share"
             app:layout_constraintEnd_toStartOf="@id/tv_views_count"
-            app:layout_constraintTop_toTopOf="@id/iv_share"
+            app:layout_constraintTop_toTopOf="@id/button_share"
             app:srcCompat="@drawable/ic_views_24" />
 
         <TextView
