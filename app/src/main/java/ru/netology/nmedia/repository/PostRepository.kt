@@ -14,4 +14,6 @@ interface PostRepository {
     fun removeItem(id: Long)
 
     fun savePost(post: Post)
+
+    fun launchYoutubeVideo(post: Post): Intent
 }

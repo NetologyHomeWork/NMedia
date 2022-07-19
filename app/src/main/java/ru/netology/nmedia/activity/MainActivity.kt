@@ -62,6 +62,12 @@ class MainActivity : AppCompatActivity() {
                     editor(post)
                 }
 
+                override fun onClickUrlVideo(post: Post) {
+                    val intent = mainViewModel.launchYoutubeVideo(post)
+                    val shareIntent = Intent.createChooser(intent, getString(R.string.watch))
+                    startActivity(shareIntent)
+                }
+
             }
         )
         rvPostItem.adapter = adapter

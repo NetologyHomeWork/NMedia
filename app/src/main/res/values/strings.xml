@@ -14,4 +14,7 @@
     <string name="empty_content">Content can\'t be empty</string>
     <string name="save">Save</string>
     <string name="add_new_post">Add New Post</string>
+    <string name="watch">Watch</string>
+    <string name="youtube_watch">Youtube watch</string>
+    <string name="play">Play</string>
 </resources>

@@ -1,10 +1,13 @@
 package ru.netology.nmedia.repository
 
 import android.content.Intent
+import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import ru.netology.nmedia.R
 import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.utils.Constants
+import ru.netology.nmedia.utils.parsingUrlLink
 
 class PostRepositoryImpl : PostRepository {
 
@@ -13,6 +16,17 @@ class PostRepositoryImpl : PostRepository {
     init {
         postList.addAll(
             listOf(
+                Post(
+                    id = 10,
+                    author = "Нетология. Университет интернет-профессий будущего",
+                    content = "Как выбрать профессию? Продуктовый дизайнер, продуктовый маркетолог, продакт-менеджер https://youtu.be/hBuqbUjKvTs",
+                    published = "23 сентября в 10:12",
+                    isLike = false,
+                    likesCount = 61,
+                    shareCount = 36,
+                    authorAvatar = R.drawable.ic_netology,
+                    viewsCount = 71
+                ),
                 Post(
                     id = 9,
                     author = "Нетология. Университет интернет-профессий будущего",
@@ -157,6 +171,12 @@ class PostRepositoryImpl : PostRepository {
             postList.add(newPost)
         }
         updateList()
+    }
+
+    override fun launchYoutubeVideo(post: Post): Intent {
+        val link = parsingUrlLink(post.content)
+        Log.e("LINK", link)
+        return Intent(Intent.ACTION_VIEW, Uri.parse(link))
     }
 
     private fun updateList() {

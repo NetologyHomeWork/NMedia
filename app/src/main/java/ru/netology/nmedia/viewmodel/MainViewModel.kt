@@ -47,6 +47,10 @@ class MainViewModel : ViewModel() {
         _edited.value = _edited.value?.copy(content = text)
     }
 
+    fun launchYoutubeVideo(post: Post): Intent {
+        return repository.launchYoutubeVideo(post)
+    }
+
     fun editingClear() {
         _edited.value = empty
     }

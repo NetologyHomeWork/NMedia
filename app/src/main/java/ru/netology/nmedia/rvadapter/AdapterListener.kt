@@ -7,4 +7,5 @@ interface AdapterListener {
     fun onClickShare(post: Post)
     fun onClickDelete(post: Post)
     fun onClickEdit(post: Post)
+    fun onClickUrlVideo(post: Post)
 }

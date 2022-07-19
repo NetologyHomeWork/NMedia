@@ -3,9 +3,11 @@ package ru.netology.nmedia.utils
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import ru.netology.nmedia.utils.Constants.PATTERN_FOR_YOUTUBE_FIND
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import java.util.regex.Pattern
 
 private val DELIMITER = BigDecimal.valueOf(1_000)
 private const val DOUBLE_DELIMITER = 1_000.0
@@ -38,6 +40,27 @@ fun showKeyboard(view: View) {
 
 fun hideKeyboard(view: View) {
     getInputMethodManager(view).hideSoftInputFromWindow(view.windowToken, 0)
+}
+
+fun parsingUrlLink(content: String): String {
+    val urlPattern: Pattern = Pattern.compile(
+        PATTERN_FOR_YOUTUBE_FIND,
+        Pattern.CASE_INSENSITIVE or Pattern.MULTILINE or Pattern.DOTALL
+    )
+    val urlList = mutableListOf<String>()
+    val urlMatcher = urlPattern.matcher(content)
+    var matchStart: Int
+    var matchEnd: Int
+
+
+    while (urlMatcher.find()) {
+        matchStart = urlMatcher.start(1)
+        matchEnd = urlMatcher.end()
+
+        val url = content.substring(matchStart, matchEnd)
+        urlList.add(url)
+    }
+    return urlList.first { it.contains("youtube") or it.contains("youtu.be") }
 }
 
 private fun getInputMethodManager(view: View): InputMethodManager {
