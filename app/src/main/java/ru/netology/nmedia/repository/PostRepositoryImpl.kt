@@ -10,12 +10,13 @@ import com.google.gson.reflect.TypeToken
 import ru.netology.nmedia.R
 import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.utils.Constants
+import ru.netology.nmedia.utils.Constants.FILE_NAME
 import ru.netology.nmedia.utils.Constants.KEY_POST
 import ru.netology.nmedia.utils.parsingUrlLink
 import java.util.*
 
 class PostRepositoryImpl(
-    context: Context
+    private val context: Context
 ) : PostRepository {
 
     private val gson = Gson()
@@ -141,10 +142,15 @@ class PostRepositoryImpl(
             )
         )*/
 
-        prefs.getString(KEY_POST, null)?.let {
-            val newPostList: List<Post> = gson.fromJson(it, typo)
-            newPostList.toCollection(postList)
-            data.value = postList.toList()
+        val file = context.filesDir.resolve(FILE_NAME)
+        if (file.exists()) {
+            context.openFileInput(FILE_NAME).bufferedReader().use {
+                val newPostList: List<Post> = gson.fromJson(it, typo)
+                newPostList.toCollection(postList)
+                data.value = postList.toList()
+            }
+        } else {
+            sync()
         }
     }
 
@@ -200,9 +206,8 @@ class PostRepositoryImpl(
     }
 
     private fun sync() {
-        with(prefs.edit()) {
-            putString(KEY_POST, gson.toJson(postList))
-            apply()
+        context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE).bufferedWriter().use {
+            it.write(gson.toJson(postList))
         }
     }
 
