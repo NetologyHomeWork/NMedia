@@ -51,7 +51,8 @@ class MainAdapter(
             tvViewsCount.text = formatCount(post.viewsCount)
             cbLike.isChecked = post.isLike
 
-            if (post.content.contains("https://youtu.be")) {
+            if (post.content.contains("https://youtu.be")
+                or post.content.contains("https://www.youtube.com")) {
                 videoView.visibility = View.VISIBLE
             } else {
                 videoView.visibility = View.GONE
