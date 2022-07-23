@@ -1,20 +1,33 @@
 package ru.netology.nmedia.repository
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import ru.netology.nmedia.R
 import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.utils.Constants
+import ru.netology.nmedia.utils.Constants.FILE_NAME
+import ru.netology.nmedia.utils.Constants.KEY_POST
 import ru.netology.nmedia.utils.parsingUrlLink
+import java.util.*
 
-class PostRepositoryImpl : PostRepository {
+class PostRepositoryImpl(
+    private val context: Context
+) : PostRepository {
+
+    private val gson = Gson()
+    private val prefs = context.getSharedPreferences("repo", Context.MODE_PRIVATE)
+    private val typo = TypeToken.getParameterized(List::class.java, Post::class.java).type
 
     private val postList = sortedSetOf<Post>({ o1, o2 -> o2.id.compareTo(o1.id)})
+    private val data = MutableLiveData(postList.toList())
 
     init {
-        postList.addAll(
+        /*postList.addAll(
             listOf(
                 Post(
                     id = 10,
@@ -127,10 +140,19 @@ class PostRepositoryImpl : PostRepository {
                     viewsCount = 987
                 )
             )
-        )
-    }
+        )*/
 
-    private val data = MutableLiveData(postList.toList())
+        val file = context.filesDir.resolve(FILE_NAME)
+        if (file.exists()) {
+            context.openFileInput(FILE_NAME).bufferedReader().use {
+                val newPostList: List<Post> = gson.fromJson(it, typo)
+                newPostList.toCollection(postList)
+                data.value = postList.toList()
+            }
+        } else {
+            sync()
+        }
+    }
 
     override fun getData() = data
 
@@ -142,6 +164,7 @@ class PostRepositoryImpl : PostRepository {
         postList.remove(post)
         postList.add(newPost)
         updateList()
+        sync()
     }
 
 
@@ -152,6 +175,7 @@ class PostRepositoryImpl : PostRepository {
         postList.remove(post)
         postList.add(newPost)
         updateList()
+        sync()
 
         return sendIntent(post)
     }
@@ -159,6 +183,7 @@ class PostRepositoryImpl : PostRepository {
     override fun removeItem(id: Long) {
         postList.remove(findPostById(id))
         updateList()
+        sync()
     }
 
     override fun savePost(post: Post) {
@@ -171,12 +196,19 @@ class PostRepositoryImpl : PostRepository {
             postList.add(newPost)
         }
         updateList()
+        sync()
     }
 
     override fun launchYoutubeVideo(post: Post): Intent {
         val link = parsingUrlLink(post.content)
         Log.e("LINK", link)
         return Intent(Intent.ACTION_VIEW, Uri.parse(link))
+    }
+
+    private fun sync() {
+        context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE).bufferedWriter().use {
+            it.write(gson.toJson(postList))
+        }
     }
 
     private fun updateList() {

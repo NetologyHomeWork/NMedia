@@ -11,6 +11,7 @@ import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.rvadapter.AdapterListener
 import ru.netology.nmedia.rvadapter.MainAdapter
 import ru.netology.nmedia.viewmodel.MainViewModel
+import ru.netology.nmedia.viewmodel.ViewModelFactory
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,7 +19,9 @@ class MainActivity : AppCompatActivity() {
     private val binding: ActivityMainBinding
         get() = _binding ?: throw RuntimeException("ActivityMainBinding is null")
 
-    private val mainViewModel by viewModels<MainViewModel>()
+
+    private val factory by lazy { ViewModelFactory(application) }
+    private val mainViewModel by viewModels<MainViewModel> { factory }
 
     private lateinit var postLauncher: ActivityResultLauncher<String>
 

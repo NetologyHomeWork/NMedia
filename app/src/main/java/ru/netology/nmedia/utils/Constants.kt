@@ -12,4 +12,6 @@ object Constants {
     const val PATTERN_FOR_YOUTUBE_FIND = ("(?:^|[\\W])((ht|f)tp(s?):/\\/|www\\.)"
             + "(([\\w\\-]+\\.){1,}?([\\w\\-.~]+/?)*"
             + "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]*$~@!:/{};']*)")
+    const val KEY_POST = "key_post"
+    const val FILE_NAME = "post.json"
 }
