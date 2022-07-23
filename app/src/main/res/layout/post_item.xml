@@ -72,6 +72,31 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_icon" />
 
+        <FrameLayout
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/title_border"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="@dimen/content_min_margin"
+            android:visibility="gone" >
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_video_view"
+                android:src="@drawable/youtube"
+                android:contentDescription="@string/youtube_watch" />
+
+            <ImageView
+                android:layout_width="@dimen/button_play_size"
+                android:layout_height="@dimen/button_play_size"
+                android:layout_gravity="center"
+                app:srcCompat="@drawable/ic_play"
+                android:contentDescription="@string/play" />
+        </FrameLayout>
+
+
 
         <TextView
             android:id="@+id/tv_post"
@@ -82,7 +107,7 @@
             android:textColor="@color/default_text_color"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title_border"
+            app:layout_constraintTop_toBottomOf="@id/videoView"
             tools:text="@sample/post.json/data/content"
             android:autoLink="web" />
 

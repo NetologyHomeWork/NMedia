@@ -1,5 +1,6 @@
 package ru.netology.nmedia.viewmodel
 
+import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,14 +19,12 @@ class MainViewModel : ViewModel() {
 
     private val repository: PostRepository = PostRepositoryImpl()
     private val _edited = MutableLiveData(empty)
-    val edited: LiveData<Post>
-        get() = _edited
 
     val data = repository.getData()
 
     fun like(post: Post) = repository.like(post)
 
-    fun share(post: Post) = repository.share(post)
+    fun share(post: Post): Intent = repository.share(post)
 
     fun deletePost(id: Long) = repository.removeItem(id)
 
@@ -46,6 +45,10 @@ class MainViewModel : ViewModel() {
             return
         }
         _edited.value = _edited.value?.copy(content = text)
+    }
+
+    fun launchYoutubeVideo(post: Post): Intent {
+        return repository.launchYoutubeVideo(post)
     }
 
     fun editingClear() {

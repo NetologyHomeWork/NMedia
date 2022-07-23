@@ -1,17 +1,15 @@
 package ru.netology.nmedia.activity
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import ru.netology.nmedia.*
+import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.rvadapter.AdapterListener
 import ru.netology.nmedia.rvadapter.MainAdapter
-import ru.netology.nmedia.utils.hideKeyboard
-import ru.netology.nmedia.utils.showKeyboard
 import ru.netology.nmedia.viewmodel.MainViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -22,28 +20,23 @@ class MainActivity : AppCompatActivity() {
 
     private val mainViewModel by viewModels<MainViewModel>()
 
+    private lateinit var postLauncher: ActivityResultLauncher<String>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
             .also { setContentView(it.root) }
-        setupRecyclerView()
-        binding.icSend.setOnClickListener {
-            binding.etEditPost.apply {
-                if (text.isNullOrBlank()) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        R.string.empty_content,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
-                mainViewModel.editedContent(text.toString())
-                mainViewModel.save()
-                setText("")
-                clearFocus()
-                binding.editLayout.visibility = View.GONE
-                hideKeyboard(it)
+        postLauncher = registerForActivityResult(NewPostActivityContract()) {
+            if (it.isNullOrBlank()) {
+                mainViewModel.editingClear()
+                return@registerForActivityResult
             }
+            mainViewModel.editedContent(it)
+            mainViewModel.save()
+        }
+        setupRecyclerView()
+        binding.buttonAdd.setOnClickListener {
+            postLauncher.launch("")
         }
     }
 
@@ -56,7 +49,9 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onClickShare(post: Post) {
-                    mainViewModel.share(post)
+                    val intent = mainViewModel.share(post)
+                    val shareIntent = Intent.createChooser(intent, getString(R.string.share))
+                    startActivity(shareIntent)
                 }
 
                 override fun onClickDelete(post: Post) {
@@ -65,6 +60,12 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onClickEdit(post: Post) {
                     editor(post)
+                }
+
+                override fun onClickUrlVideo(post: Post) {
+                    val intent = mainViewModel.launchYoutubeVideo(post)
+                    val shareIntent = Intent.createChooser(intent, getString(R.string.watch))
+                    startActivity(shareIntent)
                 }
 
             }
@@ -78,27 +79,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun editor(post: Post) {
         mainViewModel.edit(post)
-        mainViewModel.edited.observe(this) { postObserve ->
-            if (postObserve.id == 0L) {
-                return@observe
-            }
-            binding.etEditPost.apply {
-                requestFocus()
-                setText(postObserve.content.trim())
-                text?.length?.let { setSelection(it) }
-                showKeyboard(this)
-            }
-            binding.apply {
-                editLayout.visibility = View.VISIBLE
-                editTitle.text = postObserve.content
-                editClose.setOnClickListener {
-                    editLayout.visibility = View.GONE
-                    etEditPost.setText("")
-                    hideKeyboard(it)
-                    mainViewModel.editingClear()
-                }
-            }
-        }
+        postLauncher.launch(post.content)
+
     }
 
     override fun onDestroy() {
