@@ -16,7 +16,6 @@ class PostRepositoryImpl(
 ) : PostRepository {
 
     private val gson = Gson()
-    private val prefs = context.getSharedPreferences("repo", Context.MODE_PRIVATE)
     private val typo = TypeToken.getParameterized(List::class.java, Post::class.java).type
 
     private val postList = sortedSetOf<Post>({ o1, o2 -> o2.id.compareTo(o1.id)})
