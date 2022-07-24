@@ -28,10 +28,6 @@
                     <data android:scheme="*" />
                 </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.NewPostActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
