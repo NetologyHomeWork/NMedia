@@ -53,11 +53,8 @@ class MainViewModel(
         return repository.launchYoutubeVideo(post)
     }
 
-    fun findPostById(postId: Long): Post? {
-        return repository.findPostById(postId)
-    }
-
     fun editingClear() {
         _edited.value = empty
     }
+
 }
