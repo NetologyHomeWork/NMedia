@@ -7,20 +7,15 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import ru.netology.nmedia.R
 import ru.netology.nmedia.model.Post
-import ru.netology.nmedia.utils.Constants
 import ru.netology.nmedia.utils.Constants.FILE_NAME
-import ru.netology.nmedia.utils.Constants.KEY_POST
 import ru.netology.nmedia.utils.parsingUrlLink
-import java.util.*
 
 class PostRepositoryImpl(
     private val context: Context
 ) : PostRepository {
 
     private val gson = Gson()
-    private val prefs = context.getSharedPreferences("repo", Context.MODE_PRIVATE)
     private val typo = TypeToken.getParameterized(List::class.java, Post::class.java).type
 
     private val postList = sortedSetOf<Post>({ o1, o2 -> o2.id.compareTo(o1.id)})
@@ -215,11 +210,11 @@ class PostRepositoryImpl(
         data.value = postList.toList()
     }
 
-    private fun findPostById(id: Long): Post? {
-        return postList.find { it.id == id }
+    override fun findPostById(postId: Long): Post? {
+        return postList.find { it.id == postId }
     }
 
-    private fun sendIntent(post: Post) : Intent {
+    private fun sendIntent(post: Post): Intent {
         return Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, post.content)

@@ -1,15 +1,12 @@
 package ru.netology.nmedia.rvadapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostItemBinding
 import ru.netology.nmedia.model.Post
-import ru.netology.nmedia.utils.formatCount
+import ru.netology.nmedia.utils.bindPostItemLayout
 
 class MainAdapter(
     private val listener: AdapterListener
@@ -20,7 +17,7 @@ class MainAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(post: Post) {
-            bindLayout(binding, post)
+            bindPostItemLayout(binding, post, listener)
         }
     }
 
@@ -38,62 +35,6 @@ class MainAdapter(
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val post = getItem(position)
         holder.bind(post)
-    }
-
-    private fun bindLayout(binding: PostItemBinding, post: Post) {
-        binding.apply {
-            ivIcon.setImageResource(post.authorAvatar)
-            tvTitle.text = post.author
-            tvDate.text = post.published
-            tvPost.text = post.content
-            cbLike.text = formatCount(post.likesCount)
-            buttonShare.text = formatCount(post.shareCount)
-            tvViewsCount.text = formatCount(post.viewsCount)
-            cbLike.isChecked = post.isLike
-
-            if (post.content.contains("https://youtu.be") or post.content.contains("https://www.youtube.com")) {
-                videoView.visibility = View.VISIBLE
-            } else {
-                videoView.visibility = View.GONE
-            }
-
-            cbLike.setOnClickListener {
-                listener.onClickLike(post)
-            }
-
-            buttonShare.setOnClickListener {
-                listener.onClickShare(post)
-            }
-
-            ivMore.setOnClickListener {
-                showMenu(it, post)
-            }
-
-            if (videoView.visibility == View.VISIBLE) {
-                videoView.setOnClickListener {
-                    listener.onClickUrlVideo(post)
-                }
-            }
-        }
-    }
-
-    private fun showMenu(view: View, post: Post) {
-        PopupMenu(view.context, view).apply {
-            inflate(R.menu.post_options)
-            setOnMenuItemClickListener { item ->
-                when(item.itemId) {
-                    R.id.remove -> {
-                        listener.onClickDelete(post)
-                        true
-                    }
-                    R.id.item_edit -> {
-                        listener.onClickEdit(post)
-                        true
-                    }
-                    else -> false
-                }
-            }
-        }.show()
     }
 }
 

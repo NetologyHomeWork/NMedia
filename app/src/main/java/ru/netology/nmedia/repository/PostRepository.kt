@@ -16,4 +16,6 @@ interface PostRepository {
     fun savePost(post: Post)
 
     fun launchYoutubeVideo(post: Post): Intent
+
+    fun findPostById(postId: Long): Post?
 }
