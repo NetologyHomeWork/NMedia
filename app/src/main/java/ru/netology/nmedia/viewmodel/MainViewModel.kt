@@ -4,7 +4,9 @@ import android.app.Application
 import android.content.Intent
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import ru.netology.nmedia.database.PostDb
+import ru.netology.nmedia.database.db.PostDatabase
+import ru.netology.nmedia.database.repository.PostDaoImpl
+import ru.netology.nmedia.database.repository.PostDaoRepository
 import ru.netology.nmedia.model.Post
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
@@ -20,9 +22,9 @@ class MainViewModel(
         published = "07 июля в 17:50",
     )
 
-    private val repository: PostRepository = PostRepositoryImpl(
-        PostDb.getInstance(application).postDao
-    )
+    private val daoRepository = PostDaoImpl(application)
+
+    private val repository: PostRepository = PostRepositoryImpl(daoRepository)
     private val _edited = MutableLiveData(empty)
 
     val data = repository.getData()
