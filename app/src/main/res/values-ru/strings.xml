@@ -18,4 +18,10 @@
     <string name="watch">Посмотреть</string>
     <string name="youtube_watch">Просмотреть ролик Ютуб</string>
     <string name="play">Воспроизвести</string>
+    <string name="google_api_unavailable">Google Api недоступно</string>
+    <string name="channel_remote_name">Канал Нетологии</string>
+    <string name="channel_remote_description">Уведомление</string>
+    <string name="notification_user_liked">%1$s поставил лайк посту %2$s</string>
+    <string name="notification_update">Пожалуйста обновите приложения до последней версии для того, у Вас появилась возможность получать новые уведомления и быть в курсе последних событий</string>
+    <string name="notification_user_posted">%1$s опубликовал новый пост</string>
 </resources>
