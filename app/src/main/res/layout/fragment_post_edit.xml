@@ -4,17 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.PostEditFragment" >
+    tools:context=".presentation.fragments.PostEditFragment" >
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/button_save"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/fab_margin"
-        android:contentDescription="@string/save"
-        app:srcCompat="@drawable/ic_done_24" />
 
     <EditText
         android:id="@+id/et_edit_post"
@@ -22,11 +13,27 @@
         android:layout_height="match_parent"
         android:background="@drawable/edit_text_background"
         android:gravity="top"
+        android:imeOptions="actionDone"
         android:hint="@string/write_something"
         android:inputType="textAutoCorrect|textMultiLine"
         android:padding="@dimen/card_padding"
         android:textCursorDrawable="@drawable/et_cursor"
         android:textSize="@dimen/editor_post_text_size"
         android:importantForAutofill="no" />
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottomAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        style="@style/Widget.MaterialComponents.BottomAppBar.Colored" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/button_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/save"
+        app:srcCompat="@drawable/ic_done_24"
+        app:layout_anchor="@id/bottomAppBar" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

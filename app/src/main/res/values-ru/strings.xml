@@ -24,4 +24,7 @@
     <string name="notification_user_liked">%1$s поставил лайк посту %2$s</string>
     <string name="notification_update">Пожалуйста обновите приложения до последней версии для того, у Вас появилась возможность получать новые уведомления и быть в курсе последних событий</string>
     <string name="notification_user_posted">%1$s опубликовал новый пост</string>
+    <string name="retry_loading">Повторить</string>
+    <string name="error_loading">Что-то пошло не так. Попробуйте повторить запрос позже</string>
+    <string name="empty_posts">Пока здесь нет ни одного поста. Если создать новый пост, то он появится тут</string>
 </resources>
