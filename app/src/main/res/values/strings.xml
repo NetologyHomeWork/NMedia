@@ -19,8 +19,11 @@
     <string name="play">Play</string>
     <string name="google_api_unavailable">Google Api unavailable</string>
     <string name="channel_remote_name">Netology Channel</string>
-    <string name="channel_remote_description">Notitfication</string>
+    <string name="channel_remote_description">Notification</string>
     <string name="notification_user_liked">%1$s liked post by %2$s</string>
     <string name="notification_user_posted">%1$s send new post</string>
     <string name="notification_update">Please update app for new version to will receive new notification</string>
+    <string name="retry_loading">Retry</string>
+    <string name="error_loading">Something went wrong. Try again later</string>
+    <string name="empty_posts">There are no posts.\nIf you create a new post, it will appear here</string>
 </resources>
