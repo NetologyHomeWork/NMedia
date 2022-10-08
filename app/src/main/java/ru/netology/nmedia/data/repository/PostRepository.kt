@@ -4,17 +4,21 @@ import android.content.Intent
 import ru.netology.nmedia.domain.model.Post
 
 interface PostRepository {
-    fun getData(): List<Post>
+    fun getDataAsync(callback: PostCallback<List<Post>>)
 
-    fun like(post: Post)
+    fun likeAsync(post: Post, callback: PostCallback<Post>)
 
     fun share(post: Post): Intent
 
-    fun removeItem(id: Long)
+    fun removeItemAsync(id: Long, callback: PostCallback<Long>)
 
-    fun savePost(post: Post)
-
-    fun findPostById(postId: Long): Post
+    fun savePostAsync(post: Post, callback: PostCallback<Post>)
 
     fun launchYoutubeVideo(post: Post): Intent
+
+    interface PostCallback<T> {
+        fun onSuccess(value: T)
+
+        fun onFailure(e: Exception)
+    }
 }

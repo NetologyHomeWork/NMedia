@@ -79,7 +79,7 @@ private fun showMenuInDetailItem(
 private fun bindingItem(binding: PostItemBinding, post: Post) {
     binding.apply {
         tvTitle.text = post.author
-        tvDate.text = post.published
+        tvDate.text = post.published.formatDate()
         tvPost.text = post.content
         cbLike.text = formatCount(post.likesCount)
         cbLike.isChecked = post.isLike

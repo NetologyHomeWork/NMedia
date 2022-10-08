@@ -65,7 +65,7 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
 
                 override fun onClickPost(post: Post) {
                     findNavController().navigate(
-                        PostListFragmentDirections.actionPostListFragmentToPostDetailFragment(post.id)
+                        PostListFragmentDirections.actionPostListFragmentToPostDetailFragment(post)
                     )
                 }
 
