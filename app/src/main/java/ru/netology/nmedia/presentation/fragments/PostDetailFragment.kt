@@ -8,9 +8,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import ru.netology.nmedia.R
-import ru.netology.nmedia.databinding.FragmentPostDetailBinding
-import ru.netology.nmedia.domain.model.FeedPost
 import ru.netology.nmedia.data.utils.bindPostItemLayout
+import ru.netology.nmedia.databinding.FragmentPostDetailBinding
 import ru.netology.nmedia.presentation.viewmodel.MainViewModel
 
 class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
@@ -26,41 +25,37 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentPostDetailBinding.bind(view)
-        val currentPost = args.postId
-        mainViewModel.findPostById(currentPost)
-        setupObserver()
+        mainViewModel.getCurrentPost(args.post)
+        bindLayout()
+        setupListeners()
     }
 
-    private fun setupObserver() {
-        mainViewModel.currentPost.observe(viewLifecycleOwner) { feedPost ->
-            bindLayout(feedPost)
-            setupListeners(feedPost)
+    private fun bindLayout() {
+        mainViewModel.currentPost.observe(viewLifecycleOwner) { post ->
+            binding.postDetail.apply {
+                bindPostItemLayout(
+                    this,
+                    post,
+                    mainViewModel,
+                    findNavController()
+                )
+            }
         }
+
     }
 
-    private fun bindLayout(feedPost: FeedPost) {
-        binding.postDetail.apply {
-            bindPostItemLayout(
-                this,
-                feedPost.post,
-                mainViewModel,
-                findNavController()
-            )
-        }
-    }
-
-    private fun setupListeners(feedPost: FeedPost) {
+    private fun setupListeners() {
         binding.postDetail.apply {
             if (videoView.visibility == View.VISIBLE) {
                 videoView.setOnClickListener {
-                    val intent = mainViewModel.launchYoutubeVideo(feedPost.post)
+                    val intent = mainViewModel.launchYoutubeVideo(args.post)
                     val shareIntent = Intent.createChooser(intent, getString(R.string.watch))
                     startActivity(shareIntent)
                 }
             }
 
             buttonShare.setOnClickListener {
-                val intent = mainViewModel.share(feedPost.post)
+                val intent = mainViewModel.share(args.post)
                 val shareIntent = Intent.createChooser(intent, getString(R.string.share))
                 startActivity((shareIntent))
             }
