@@ -27,4 +27,5 @@
     <string name="retry_loading">Повторить</string>
     <string name="error_loading">Что-то пошло не так. Попробуйте повторить запрос позже</string>
     <string name="empty_posts">Пока здесь нет ни одного поста. Если создать новый пост, то он появится тут</string>
+    <string name="picture_attachment">Вложенная картинка</string>
 </resources>
