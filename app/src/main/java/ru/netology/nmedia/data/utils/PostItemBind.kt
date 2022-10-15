@@ -2,11 +2,14 @@ package ru.netology.nmedia.data.utils
 
 import android.view.View
 import android.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.navigation.NavController
+import com.bumptech.glide.Glide
+import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostItemBinding
-import ru.netology.nmedia.presentation.fragments.PostDetailFragmentDirections
 import ru.netology.nmedia.domain.model.Post
+import ru.netology.nmedia.presentation.fragments.PostDetailFragmentDirections
 import ru.netology.nmedia.presentation.rvadapter.AdapterListener
 import ru.netology.nmedia.presentation.viewmodel.MainViewModel
 
@@ -84,11 +87,24 @@ private fun bindingItem(binding: PostItemBinding, post: Post) {
         cbLike.text = formatCount(post.likesCount)
         cbLike.isChecked = post.isLike
 
-        if (post.content.contains("https://youtu.be") or post.content.contains("https://www.youtube.com")) {
-            videoView.visibility = View.VISIBLE
-        } else {
-            videoView.visibility = View.GONE
-        }
+        Glide.with(ivIcon)
+            .load("${BuildConfig.BASE_URL}/avatars/${post.authorAvatar}")
+            .timeout(10_000)
+            .placeholder(R.drawable.ic_loading)
+            .error(R.drawable.ic_error)
+            .circleCrop()
+            .into(ivIcon)
+
+        if (post.attachment != null && post.attachment.type.equals("image", true)) {
+            ivAttachmentPicture.isVisible = true
+
+            Glide.with(ivAttachmentPicture)
+                .load("${BuildConfig.BASE_URL}/images/${post.attachment.url}")
+                .timeout(10_000)
+                .placeholder(R.drawable.ic_loading)
+                .error(R.drawable.ic_error)
+                .into(ivAttachmentPicture)
+        } else ivAttachmentPicture.isVisible = false
     }
 }
 
@@ -108,12 +124,6 @@ private fun adapterListenerAction(binding: PostItemBinding, post: Post, listener
 
         binding.root.setOnClickListener {
             listener.onClickPost(post)
-        }
-
-        if (videoView.visibility == View.VISIBLE) {
-            videoView.setOnClickListener {
-                listener.onClickUrlVideo(post)
-            }
         }
     }
 }
