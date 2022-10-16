@@ -4,14 +4,14 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import ru.netology.nmedia.data.repository.PostRepository
-import ru.netology.nmedia.data.repository.PostRepositoryImpl
 import ru.netology.nmedia.data.utils.SingleLiveEvent
 import ru.netology.nmedia.domain.model.FeedModel
 import ru.netology.nmedia.domain.model.Post
 
 class MainViewModel(
-    private val repository: PostRepository = PostRepositoryImpl()
+    private val repository: PostRepository
 ) : ViewModel() {
 
     private val empty = Post(
@@ -22,6 +22,8 @@ class MainViewModel(
         likesCount = 0,
         isLike = false
     )
+
+    val commands = MutableStateFlow<Command>(Command.ShowContent)
 
     private val _edited = MutableLiveData(empty)
 
@@ -34,19 +36,17 @@ class MainViewModel(
     private val _currentPost = MutableLiveData<Post>()
     val currentPost: LiveData<Post> get() = _currentPost
 
-    init {
-        loadPost()
-    }
-
     fun loadPost() {
         _data.postValue(FeedModel(loading = true))
         repository.getDataAsync(object : PostRepository.PostCallback<List<Post>> {
             override fun onSuccess(value: List<Post>) {
                 _data.postValue(FeedModel(posts = value, empty = value.isEmpty()))
+                commands.tryEmit(Command.ShowContent)
             }
 
-            override fun onFailure(e: Exception) {
+            override fun onFailure(t: Throwable) {
                 _data.postValue(FeedModel(error = true))
+                commands.tryEmit(Command.ShowErrorLayout)
             }
         })
     }
@@ -56,10 +56,11 @@ class MainViewModel(
             repository.savePostAsync(it, object : PostRepository.PostCallback<Post> {
                 override fun onSuccess(value: Post) {
                     _postCreated.postValue(Unit)
+                    commands.tryEmit(Command.ShowContent)
                 }
 
-                override fun onFailure(e: Exception) {
-                    _data.postValue(FeedModel(error = true))
+                override fun onFailure(t: Throwable) {
+                    commands.tryEmit(Command.ShowErrorSnackbar)
                 }
             })
         }
@@ -71,10 +72,12 @@ class MainViewModel(
             override fun onSuccess(value: Post) {
                 changeLikeState(post)
                 changeDetailLike(post)
+                commands.tryEmit(Command.ShowContent)
             }
 
-            override fun onFailure(e: Exception) {
+            override fun onFailure(t: Throwable) {
                 _data.postValue(FeedModel(error = true))
+                commands.tryEmit(Command.ShowErrorSnackbar)
             }
         })
     }
@@ -86,13 +89,15 @@ class MainViewModel(
                 posts = _data.value?.posts.orEmpty().filter { it.id != id }
             )
         )
-        repository.removeItemAsync(id, object : PostRepository.PostCallback<Long> {
-            override fun onSuccess(value: Long) {
+        repository.removeItemAsync(id, object : PostRepository.PostCallback<Unit> {
+            override fun onSuccess(value: Unit) {
                 _postCreated.postValue(Unit)
+                commands.tryEmit(Command.ShowContent)
             }
 
-            override fun onFailure(e: Exception) {
+            override fun onFailure(t: Throwable) {
                 _data.postValue(_data.value?.copy(posts = old))
+                commands.tryEmit(Command.ShowErrorSnackbar)
             }
         })
     }
@@ -163,5 +168,11 @@ class MainViewModel(
                 } else it
             }
         )
+    }
+
+    sealed class Command {
+        object ShowErrorSnackbar : Command()
+        object ShowErrorLayout : Command()
+        object ShowContent : Command()
     }
 }

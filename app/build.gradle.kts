@@ -8,6 +8,12 @@ plugins {
 }
 
 android {
+    val TRUE = "true"
+    val FALSE = "false"
+    val CAN_USE_CHUCKER = "CAN_USE_MOCK"
+    val IS_LOGS_ENABLED = "IS_LOGS_ENABLED"
+    val BASE_URL = "\"http://10.0.2.2:9999/\""
+
     compileSdk = 33
 
     defaultConfig {
@@ -37,16 +43,28 @@ android {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             manifestPlaceholders["usesCleartextTraffic"] = false
-            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:9999\"")
+            buildConfigField("String", "BASE_URL", BASE_URL)
+            buildConfigField("boolean", CAN_USE_CHUCKER, FALSE)
+            buildConfigField("boolean", IS_LOGS_ENABLED, FALSE)
         }
         debug {
             manifestPlaceholders["usesCleartextTraffic"] = true
-            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:9999\"")
+            buildConfigField("String", "BASE_URL", BASE_URL)
+            buildConfigField("boolean", CAN_USE_CHUCKER, TRUE)
+            buildConfigField("boolean", IS_LOGS_ENABLED, TRUE)
         }
     }
 }
 
 dependencies {
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+
+    // Chucker
+    implementation("com.github.chuckerteam.chucker:library:3.5.2")
 
     // Glide
     implementation("com.github.bumptech.glide:glide:4.14.2")
@@ -88,7 +106,7 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.5.1")
-    implementation("com.google.android.material:material:1.6.1")
+    implementation("com.google.android.material:material:1.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

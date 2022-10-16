@@ -4,9 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.netology.nmedia.R
 import ru.netology.nmedia.data.utils.bindPostItemLayout
 import ru.netology.nmedia.databinding.FragmentPostDetailBinding
@@ -18,7 +18,7 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
     private val binding: FragmentPostDetailBinding
         get() = _binding ?: throw NullPointerException("FragmentPostDetailBinding is null")
 
-    private val mainViewModel by viewModels<MainViewModel>(ownerProducer = ::requireParentFragment)
+    private val mainViewModel by viewModel<MainViewModel>()
 
     private val args by navArgs<PostDetailFragmentArgs>()
 

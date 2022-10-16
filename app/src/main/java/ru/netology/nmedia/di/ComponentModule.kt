@@ -9,7 +9,7 @@ import ru.netology.nmedia.presentation.viewmodel.MainViewModel
 val componentModule = module {
 
     single<PostRepository> {
-        PostRepositoryImpl()
+        PostRepositoryImpl(postService = get())
     }
 
     viewModel {
