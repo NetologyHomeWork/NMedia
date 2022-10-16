@@ -46,14 +46,6 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
 
     private fun setupListeners() {
         binding.postDetail.apply {
-            if (videoView.visibility == View.VISIBLE) {
-                videoView.setOnClickListener {
-                    val intent = mainViewModel.launchYoutubeVideo(args.post)
-                    val shareIntent = Intent.createChooser(intent, getString(R.string.watch))
-                    startActivity(shareIntent)
-                }
-            }
-
             buttonShare.setOnClickListener {
                 val intent = mainViewModel.share(args.post)
                 val shareIntent = Intent.createChooser(intent, getString(R.string.share))

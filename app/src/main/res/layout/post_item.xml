@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/card_padding">
 
-        <ImageView
+       <ImageView
             android:id="@+id/iv_icon"
             android:layout_width="@dimen/avatar_ratio"
             android:layout_height="@dimen/avatar_ratio"
@@ -22,7 +22,7 @@
             app:layout_constraintBottom_toTopOf="@id/title_border"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_netology" />
+            tools:src="@drawable/ic_netology" />
 
         <TextView
             android:id="@+id/tv_title"
@@ -61,7 +61,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_more_vert_24" />
 
-        <View
+         <View
             android:id="@+id/title_border"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -72,32 +72,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_icon" />
 
-        <FrameLayout
-            android:id="@+id/videoView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/title_border"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="@dimen/content_min_margin"
-            android:visibility="gone" >
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/height_video_view"
-                android:src="@drawable/youtube"
-                android:contentDescription="@string/youtube_watch" />
-
-            <ImageView
-                android:layout_width="@dimen/button_play_size"
-                android:layout_height="@dimen/button_play_size"
-                android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_play"
-                android:contentDescription="@string/play" />
-        </FrameLayout>
-
-
-
         <TextView
             android:id="@+id/tv_post"
             android:layout_width="wrap_content"
@@ -107,9 +81,23 @@
             android:textColor="@color/default_text_color"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/videoView"
+            app:layout_constraintTop_toBottomOf="@id/title_border"
             tools:text="@sample/post.json/data/content"
             android:autoLink="web" />
+
+        <ImageView
+            android:id="@+id/iv_attachment_picture"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_video_view"
+            android:contentDescription="@string/picture_attachment"
+            android:visibility="gone"
+            android:scaleType="centerInside"
+            app:layout_constraintTop_toBottomOf="@id/tv_post"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="@dimen/content_min_margin"
+            tools:src="@drawable/youtube"
+            tools:visibility="visible" />
 
         <View
             android:id="@+id/main_border"
@@ -120,7 +108,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight="@dimen/height_view"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_post" />
+            app:layout_constraintTop_toBottomOf="@id/iv_attachment_picture" />
 
         <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/cb_like"
