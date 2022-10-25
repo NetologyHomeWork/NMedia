@@ -5,8 +5,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.collectLatest
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentPostListBinding
 import ru.netology.nmedia.domain.model.Post
@@ -19,7 +22,7 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
     private val binding: FragmentPostListBinding
         get() = _binding ?: throw RuntimeException("FragmentPostListBinding is null")
 
-    private val mainViewModel by viewModels<MainViewModel>(ownerProducer = ::requireParentFragment)
+    private val mainViewModel by viewModel<MainViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -28,6 +31,12 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
         setupRecyclerView()
         setupListeners()
         swipeRefresh()
+        observeFlow()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mainViewModel.loadPost()
     }
 
     override fun onDestroyView() {
@@ -95,6 +104,30 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
             findNavController().navigate(
                 PostListFragmentDirections.actionPostListFragmentToPostEditFragment("")
             )
+        }
+
+        binding.btnRetry.setOnClickListener {
+            mainViewModel.loadPost()
+        }
+    }
+
+    private fun observeFlow() {
+        lifecycleScope.launchWhenStarted {
+            mainViewModel.commands.collectLatest { command ->
+                when (command) {
+                    is MainViewModel.Command.ShowErrorSnackbar -> {
+                        Snackbar.make(
+                            binding.root,
+                            getString(R.string.error_loading),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                    MainViewModel.Command.ShowErrorLayout -> {
+                        binding.errorGroup.isVisible = true
+                    }
+                    MainViewModel.Command.ShowContent -> { /* no-op */ }
+                }
+            }
         }
     }
 

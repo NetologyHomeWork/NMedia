@@ -10,7 +10,7 @@ interface PostRepository {
 
     fun share(post: Post): Intent
 
-    fun removeItemAsync(id: Long, callback: PostCallback<Long>)
+    fun removeItemAsync(id: Long, callback: PostCallback<Unit>)
 
     fun savePostAsync(post: Post, callback: PostCallback<Post>)
 
@@ -19,6 +19,6 @@ interface PostRepository {
     interface PostCallback<T> {
         fun onSuccess(value: T)
 
-        fun onFailure(e: Exception)
+        fun onFailure(t: Throwable)
     }
 }

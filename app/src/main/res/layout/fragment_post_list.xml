@@ -25,9 +25,6 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-
-
-
     <TextView
         android:id="@+id/tv_retry"
         android:layout_width="wrap_content"
@@ -54,6 +51,7 @@
         android:id="@+id/error_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:constraint_referenced_ids="tv_retry,btn_retry" />
 
     <TextView
@@ -62,6 +60,7 @@
         android:layout_height="wrap_content"
         android:text="@string/empty_posts"
         android:visibility="gone"
+        tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -72,6 +71,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

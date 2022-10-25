@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentPostEditBinding
 import ru.netology.nmedia.presentation.viewmodel.MainViewModel
@@ -17,7 +17,7 @@ class PostEditFragment : Fragment(R.layout.fragment_post_edit) {
     private val binding: FragmentPostEditBinding
         get() = _binding ?: throw NullPointerException("FragmentPostEditBinding is null")
 
-    private val mainViewModel by viewModels<MainViewModel>(ownerProducer = ::requireParentFragment)
+    private val mainViewModel by viewModel<MainViewModel>()
 
     private val args by navArgs<PostEditFragmentArgs>()
 
