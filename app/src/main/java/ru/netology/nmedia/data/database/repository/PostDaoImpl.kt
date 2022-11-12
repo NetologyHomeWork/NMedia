@@ -14,19 +14,19 @@ class PostDaoImpl(
     override val allPostEntity: LiveData<List<PostEntity>>
         get() = postDao.getAll()
 
-    override fun save(postEntity: PostEntity) {
+    override suspend fun save(postEntity: PostEntity) {
         postDao.save(postEntity)
     }
 
-    override fun like(postEntity: PostEntity) {
+    override suspend fun like(postEntity: PostEntity) {
         postDao.like(postEntity.id, postEntity.isLike, postEntity.likesCount)
     }
 
-    override fun delete(postId: Long) {
+    override suspend fun delete(postId: Long) {
         postDao.removeById(postId)
     }
 
-    override fun findPostById(postId: Long): PostEntity? {
+    override suspend fun findPostById(postId: Long): PostEntity? {
         return postDao.findPostById(postId)
     }
 }

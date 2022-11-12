@@ -27,4 +27,6 @@
     <string name="error_loading">Something went wrong. Try again later</string>
     <string name="empty_posts">There are no posts.\nIf you create a new post, it will appear here</string>
     <string name="picture_attachment">Picture Attachment</string>
+    <string name="error_connection">Error connection</string>
+    <string name="unknown_error">Unknown error</string>
 </resources>

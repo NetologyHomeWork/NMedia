@@ -8,24 +8,41 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.netology.nmedia.R
+import ru.netology.nmedia.data.utils.hideKeyboard
 import ru.netology.nmedia.databinding.FragmentPostEditBinding
+import ru.netology.nmedia.domain.model.Post
 import ru.netology.nmedia.presentation.viewmodel.MainViewModel
 
 class PostEditFragment : Fragment(R.layout.fragment_post_edit) {
+
+    private var editPost = Post(
+        id = 0,
+        author = "",
+        content = "",
+        published = System.currentTimeMillis().toString().dropLast(3),
+        authorAvatar = "",
+        likesCount = 0,
+        isLike = false,
+        attachment = null
+    )
 
     private var _binding: FragmentPostEditBinding? = null
     private val binding: FragmentPostEditBinding
         get() = _binding ?: throw NullPointerException("FragmentPostEditBinding is null")
 
-    private val mainViewModel by viewModel<MainViewModel>()
+    private val mainViewModel by viewModel<MainViewModel>(owner = ::requireParentFragment)
 
     private val args by navArgs<PostEditFragmentArgs>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentPostEditBinding.bind(view)
-        binding.etEditPost.setText(args.content)
-        binding.buttonSave.setOnClickListener { save() }
+        binding.etEditPost.setText(args.post?.content)
+        args.post?.let { editPost = it }
+        binding.buttonSave.setOnClickListener {
+            save()
+            it.hideKeyboard()
+        }
     }
 
     override fun onDestroyView() {
@@ -41,12 +58,16 @@ class PostEditFragment : Fragment(R.layout.fragment_post_edit) {
                 Toast.LENGTH_SHORT
             ).show()
         } else {
-            mainViewModel.editedContent(binding.etEditPost.text.toString())
-            mainViewModel.save()
-            mainViewModel.editingClear()
-            mainViewModel.postCreated.observe(viewLifecycleOwner) {
+            val content = binding.etEditPost.text.toString().trim()
+            if (editPost.content == content) {
                 findNavController().popBackStack()
-                mainViewModel.loadPost()
+            } else {
+                editPost = editPost.copy(content = content)
+                mainViewModel.save(editPost)
+                mainViewModel.postCreated.observe(viewLifecycleOwner) {
+                    findNavController().popBackStack()
+                    mainViewModel.loadPost()
+                }
             }
         }
     }

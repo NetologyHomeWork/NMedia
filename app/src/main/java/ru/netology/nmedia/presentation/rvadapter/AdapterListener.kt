@@ -1,17 +1,19 @@
 package ru.netology.nmedia.presentation.rvadapter
 
-import ru.netology.nmedia.domain.model.Post
+import ru.netology.nmedia.domain.model.PostUIModel
 
 interface AdapterListener {
-    fun onClickLike(post: Post)
+    fun onClickLike(post: PostUIModel)
 
-    fun onClickShare(post: Post)
+    fun onClickShare(post: PostUIModel)
 
-    fun onClickDelete(post: Post)
+    fun onClickDelete(post: PostUIModel)
 
-    fun onClickEdit(post: Post)
+    fun onClickEdit(post: PostUIModel)
 
-    fun onClickUrlVideo(post: Post)
+    fun onClickUrlVideo(post: PostUIModel)
 
-    fun onClickPost(post: Post)
+    fun onClickPost(post: PostUIModel)
+
+    fun onClickRetry(post: PostUIModel)
 }

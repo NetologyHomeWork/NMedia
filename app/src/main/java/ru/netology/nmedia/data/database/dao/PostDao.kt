@@ -15,21 +15,24 @@ interface PostDao {
     fun getAll(): LiveData<List<PostEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(post: PostEntity)
+    suspend fun insert(post: PostEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(posts: List<PostEntity>)
 
     @Query("update $TABLE_NAME set content = :content where id = :postId")
-    fun updateContentById(postId: Long, content: String)
+    suspend fun updateContentById(postId: Long, content: String)
 
-    fun save(post: PostEntity) {
+    suspend fun save(post: PostEntity) {
         if (post.id == 0L) insert(post) else updateContentById(post.id, post.content)
     }
 
     @Query("update $TABLE_NAME set is_like = :isLike, like_count = :likeCount where id = :postId")
-    fun like(postId: Long, isLike: Boolean, likeCount: Int)
+    suspend fun like(postId: Long, isLike: Boolean, likeCount: Int)
 
     @Query("delete from $TABLE_NAME where id = :postId")
-    fun removeById(postId: Long)
+    suspend fun removeById(postId: Long)
 
     @Query("select * from $TABLE_NAME where id = :postId")
-    fun findPostById(postId: Long): PostEntity?
+    suspend fun findPostById(postId: Long): PostEntity?
 }

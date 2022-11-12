@@ -1,43 +1,43 @@
 package ru.netology.nmedia.data.utils
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import ru.netology.nmedia.data.repository.PostRepository
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
-
-fun OkHttpClient.execute(request: Request) {
-    this.newCall(request)
-        .execute()
-        .close()
-}
-
-fun <T> Call<T>.enqueue(
-    callback: PostRepository.PostCallback<T>
-) {
-    this.enqueue(object : Callback<T> {
-
-            override fun onResponse(call: Call<T>, response: Response<T>) {
-                if (response.isSuccessful.not()) {
-                    callback.onFailure(IllegalStateException(response.message()))
-                    return
-                }
-
-                callback.onSuccess(response.body() ?: throw IllegalStateException("body is null"))
-            }
-
-            override fun onFailure(call: Call<T>, t: Throwable) {
-                callback.onFailure(t)
-            }
-        })
-}
+import java.util.Date
 
 fun String.formatDate(): String {
     val formatter = SimpleDateFormat.getDateTimeInstance()
     return formatter.format(Date(this.toLong() * 1000))
+}
+
+fun<T> commandSharedFlow() = MutableSharedFlow<T>(
+    replay = 0,
+    extraBufferCapacity = 10,
+    onBufferOverflow = BufferOverflow.DROP_OLDEST
+)
+
+fun<T> Flow<T>.observeSharedFlow(lifecycleOwner: LifecycleOwner, body: (T) -> Unit) {
+    lifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
+        collectLatest {
+            body(it)
+        }
+    }
+}
+
+private fun LifecycleOwner.addRepeatingJob(
+    state: Lifecycle.State,
+    block: suspend CoroutineScope.() -> Unit
+): Job {
+    return lifecycleScope.launch {
+        repeatOnLifecycle(state, block)
+    }
 }

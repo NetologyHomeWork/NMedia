@@ -1,24 +1,26 @@
 package ru.netology.nmedia.data.repository
 
 import android.content.Intent
+import androidx.lifecycle.LiveData
 import ru.netology.nmedia.domain.model.Post
+import ru.netology.nmedia.domain.model.PostUIModel
 
 interface PostRepository {
-    fun getDataAsync(callback: PostCallback<List<Post>>)
 
-    fun likeAsync(post: Post, callback: PostCallback<Post>)
+    val data: LiveData<List<PostUIModel>>
+    suspend fun getDataAsync(): List<Post>
+
+    suspend fun likeAsync(post: Post)
 
     fun share(post: Post): Intent
 
-    fun removeItemAsync(id: Long, callback: PostCallback<Unit>)
+    suspend fun removeItemAsync(id: Long)
 
-    fun savePostAsync(post: Post, callback: PostCallback<Post>)
+    suspend fun savePostAsync(post: Post)
 
     fun launchYoutubeVideo(post: Post): Intent
 
-    interface PostCallback<T> {
-        fun onSuccess(value: T)
+    suspend fun getPostById(postId: Long): Post
 
-        fun onFailure(t: Throwable)
-    }
+    suspend fun removeFromDatabase(postId: Long)
 }

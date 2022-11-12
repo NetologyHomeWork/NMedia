@@ -38,8 +38,8 @@
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out_down" />
         <argument
-            android:name="post"
-            app:argType="ru.netology.nmedia.domain.model.Post" />
+            android:name="postId"
+            app:argType="long" />
     </fragment>
     <fragment
         android:id="@+id/postEditFragment"
@@ -47,7 +47,8 @@
         android:label="fragment_post_edit"
         tools:layout="@layout/fragment_post_edit">
         <argument
-            android:name="content"
-            app:argType="string" />
+            android:name="post"
+            app:argType="ru.netology.nmedia.domain.model.Post"
+            app:nullable="true" />
     </fragment>
 </navigation>

@@ -3,6 +3,7 @@ package ru.netology.nmedia.domain.model
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import kotlinx.parcelize.Parcelize
+import ru.netology.nmedia.data.database.entity.PostEntity
 
 @Parcelize
 data class Post(
@@ -24,3 +25,21 @@ data class Attachment(
     val type: String = "",
     val url: String = ""
 ) : Parcelable
+
+fun Post.toPostEntity(): PostEntity = PostEntity(
+    id = this.id,
+    author = this.author,
+    content = this.content,
+    published = this.published,
+    isLike = this.isLike,
+    likesCount = this.likesCount,
+    authorAvatar = this.authorAvatar,
+    isError = false
+    /*description = this.attachment?.description,
+    type = this.attachment?.type,
+    url = this.attachment?.url*/
+)
+
+fun List<Post>.toPostEntityList(): List<PostEntity> {
+    return this.map { it.toPostEntity() }
+}

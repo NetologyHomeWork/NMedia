@@ -1,8 +1,12 @@
 package ru.netology.nmedia.data.utils
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import okio.IOException
+import ru.netology.nmedia.R
+import ru.netology.nmedia.data.AppException
 import ru.netology.nmedia.data.utils.Constants.PATTERN_FOR_YOUTUBE_FIND
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -34,12 +38,12 @@ private fun formatNumber(count: Int, delimiter: Double, bigDecimalDelimiter: Big
     }
 }
 
-fun showKeyboard(view: View) {
-    getInputMethodManager(view).showSoftInput(view, 0)
+fun View.showKeyboard() {
+    getInputMethodManager(this).showSoftInput(this, 0)
 }
 
-fun hideKeyboard(view: View) {
-    getInputMethodManager(view).hideSoftInputFromWindow(view.windowToken, 0)
+fun View.hideKeyboard() {
+    getInputMethodManager(this).hideSoftInputFromWindow(this.windowToken, 0)
 }
 
 fun parsingUrlLink(content: String): String {
@@ -61,6 +65,23 @@ fun parsingUrlLink(content: String): String {
         urlList.add(url)
     }
     return urlList.first { it.contains("youtube") or it.contains("youtu.be") }
+}
+
+internal inline fun<T> wrapException(resourceManager: ResourceManager, block: () -> T): T {
+    try {
+        return block.invoke()
+    } catch (e: Exception) {
+        Log.e("TAG_Error", "wrapException: ${e.javaClass.simpleName}")
+        when(e) {
+            is AppException.ApiError -> throw e
+            is IOException -> {
+                throw AppException.NetworkError(resourceManager.getString(R.string.error_connection))
+            }
+            else -> {
+                throw AppException.UnknownError(resourceManager.getString(R.string.unknown_error))
+            }
+        }
+    }
 }
 
 private fun getInputMethodManager(view: View): InputMethodManager {

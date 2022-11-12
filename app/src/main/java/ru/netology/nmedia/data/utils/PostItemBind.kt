@@ -9,13 +9,14 @@ import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostItemBinding
 import ru.netology.nmedia.domain.model.Post
+import ru.netology.nmedia.domain.model.PostUIModel
 import ru.netology.nmedia.presentation.fragments.PostDetailFragmentDirections
 import ru.netology.nmedia.presentation.rvadapter.AdapterListener
-import ru.netology.nmedia.presentation.viewmodel.MainViewModel
+import ru.netology.nmedia.presentation.viewmodel.PostDetailViewModel
 
 fun bindPostItemLayout(
     binding: PostItemBinding,
-    post: Post,
+    post: PostUIModel,
     listener: AdapterListener
 ) {
     bindingItem(binding, post)
@@ -24,17 +25,20 @@ fun bindPostItemLayout(
 
 fun bindPostItemLayout(
     binding: PostItemBinding,
-    post: Post,
-    viewModel: MainViewModel,
+    post: PostUIModel,
+    viewModel: PostDetailViewModel,
     navController: NavController
 ) {
     bindingItem(binding, post)
     viewModelListenerAction(binding, post, viewModel, navController)
 }
 
-private fun showMenuInListItem(view: View, post: Post, listener: AdapterListener) {
+private fun showMenuInListItem(view: View, post: PostUIModel, listener: AdapterListener) {
     PopupMenu(view.context, view).apply {
         inflate(R.menu.post_options)
+        if (post.isError) {
+            this.menu.findItem(R.id.retry).isVisible = true
+        }
         setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.remove -> {
@@ -43,6 +47,10 @@ private fun showMenuInListItem(view: View, post: Post, listener: AdapterListener
                 }
                 R.id.item_edit -> {
                     listener.onClickEdit(post)
+                    true
+                }
+                R.id.retry -> {
+                    listener.onClickRetry(post)
                     true
                 }
                 else -> false
@@ -54,7 +62,7 @@ private fun showMenuInListItem(view: View, post: Post, listener: AdapterListener
 private fun showMenuInDetailItem(
     view: View,
     post: Post,
-    viewModel: MainViewModel,
+    viewModel: PostDetailViewModel,
     navController: NavController
 ) {
     PopupMenu(view.context, view).apply {
@@ -69,7 +77,7 @@ private fun showMenuInDetailItem(
                 R.id.item_edit -> {
                     viewModel.edit(post)
                     navController.navigate(
-                        PostDetailFragmentDirections.actionPostDetailFragmentToPostEditFragment(post.content)
+                        PostDetailFragmentDirections.actionPostDetailFragmentToPostEditFragment(post)
                     )
                     true
                 }
@@ -79,27 +87,31 @@ private fun showMenuInDetailItem(
     }.show()
 }
 
-private fun bindingItem(binding: PostItemBinding, post: Post) {
+private fun bindingItem(binding: PostItemBinding, post: PostUIModel) {
     binding.apply {
-        tvTitle.text = post.author
-        tvDate.text = post.published.formatDate()
-        tvPost.text = post.content
-        cbLike.text = formatCount(post.likesCount)
-        cbLike.isChecked = post.isLike
+        tvTitle.text = post.post.author
+        tvDate.text = post.post.published.formatDate()
+        tvPost.text = post.post.content
+        cbLike.text = formatCount(post.post.likesCount)
+        cbLike.isChecked = post.post.isLike
+        ivError.isVisible = post.isError
+        cbLike.isEnabled = post.isError.not()
+        buttonShare.isEnabled = post.isError.not()
+        binding.root.isEnabled = post.isError.not()
 
         Glide.with(ivIcon)
-            .load("${BuildConfig.BASE_URL}/avatars/${post.authorAvatar}")
+            .load("${BuildConfig.BASE_URL}avatars/${post.post.authorAvatar}")
             .timeout(10_000)
             .placeholder(R.drawable.ic_loading)
             .error(R.drawable.ic_error)
             .circleCrop()
             .into(ivIcon)
 
-        if (post.attachment != null && post.attachment.type.equals("image", true)) {
+        if (post.post.attachment != null && post.post.attachment.type.equals("image", true)) {
             ivAttachmentPicture.isVisible = true
 
             Glide.with(ivAttachmentPicture)
-                .load("${BuildConfig.BASE_URL}/images/${post.attachment.url}")
+                .load("${BuildConfig.BASE_URL}images/${post.post.attachment.url}")
                 .timeout(10_000)
                 .placeholder(R.drawable.ic_loading)
                 .error(R.drawable.ic_error)
@@ -108,7 +120,7 @@ private fun bindingItem(binding: PostItemBinding, post: Post) {
     }
 }
 
-private fun adapterListenerAction(binding: PostItemBinding, post: Post, listener: AdapterListener) {
+private fun adapterListenerAction(binding: PostItemBinding, post: PostUIModel, listener: AdapterListener) {
     with(binding) {
         cbLike.setOnClickListener {
             listener.onClickLike(post)
@@ -130,17 +142,17 @@ private fun adapterListenerAction(binding: PostItemBinding, post: Post, listener
 
 private fun viewModelListenerAction(
     binding: PostItemBinding,
-    post: Post,
-    viewModel: MainViewModel,
+    post: PostUIModel,
+    viewModel: PostDetailViewModel,
     navController: NavController
 ) {
     with(binding) {
         cbLike.setOnClickListener {
-            viewModel.like(post)
+            viewModel.like(post.post)
         }
 
         ivMore.setOnClickListener {
-            showMenuInDetailItem(it, post, viewModel, navController)
+            showMenuInDetailItem(it, post.post, viewModel, navController)
         }
     }
 }

@@ -7,11 +7,11 @@ interface PostDaoRepository {
 
     val allPostEntity: LiveData<List<PostEntity>>
 
-    fun save(postEntity: PostEntity)
+    suspend fun save(postEntity: PostEntity)
 
-    fun like(postEntity: PostEntity)
+    suspend fun like(postEntity: PostEntity)
 
-    fun delete(postId: Long)
+    suspend fun delete(postId: Long)
 
-    fun findPostById(postId: Long): PostEntity?
+    suspend fun findPostById(postId: Long): PostEntity?
 }

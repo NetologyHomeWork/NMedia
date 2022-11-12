@@ -12,7 +12,8 @@ import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentPostListBinding
-import ru.netology.nmedia.domain.model.Post
+import ru.netology.nmedia.domain.model.FeedModelState
+import ru.netology.nmedia.domain.model.PostUIModel
 import ru.netology.nmedia.presentation.rvadapter.AdapterListener
 import ru.netology.nmedia.presentation.rvadapter.MainAdapter
 import ru.netology.nmedia.presentation.viewmodel.MainViewModel
@@ -22,7 +23,7 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
     private val binding: FragmentPostListBinding
         get() = _binding ?: throw RuntimeException("FragmentPostListBinding is null")
 
-    private val mainViewModel by viewModel<MainViewModel>()
+    private val mainViewModel by viewModel<MainViewModel>(owner = ::requireParentFragment)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,11 +35,6 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
         observeFlow()
     }
 
-    override fun onStart() {
-        super.onStart()
-        mainViewModel.loadPost()
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -48,34 +44,41 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
         val rvPostItem = binding.rvPostList
         val adapter = MainAdapter(
             object : AdapterListener {
-                override fun onClickLike(post: Post) {
-                    mainViewModel.like(post)
+                override fun onClickLike(post: PostUIModel) {
+                    mainViewModel.like(post.post)
                 }
 
-                override fun onClickShare(post: Post) {
-                    val intent = mainViewModel.share(post)
+                override fun onClickShare(post: PostUIModel) {
+                    val intent = mainViewModel.share(post.post)
                     val shareIntent = Intent.createChooser(intent, getString(R.string.share))
                     startActivity(shareIntent)
                 }
 
-                override fun onClickDelete(post: Post) {
-                    mainViewModel.deletePost(post.id)
+                override fun onClickDelete(post: PostUIModel) {
+                    mainViewModel.deletePost(post.post)
                 }
 
-                override fun onClickEdit(post: Post) {
-                    editor(post)
+                override fun onClickEdit(post: PostUIModel) {
+                    findNavController().navigate(
+                        PostListFragmentDirections.actionPostListFragmentToPostEditFragment(post.post)
+                    )
                 }
 
-                override fun onClickUrlVideo(post: Post) {
-                    val intent = mainViewModel.launchYoutubeVideo(post)
+                override fun onClickUrlVideo(post: PostUIModel) {
+                    val intent = mainViewModel.launchYoutubeVideo(post.post)
                     val shareIntent = Intent.createChooser(intent, getString(R.string.watch))
                     startActivity(shareIntent)
                 }
 
-                override fun onClickPost(post: Post) {
+                override fun onClickPost(post: PostUIModel) {
                     findNavController().navigate(
-                        PostListFragmentDirections.actionPostListFragmentToPostDetailFragment(post)
+                        PostListFragmentDirections
+                            .actionPostListFragmentToPostDetailFragment(post.post.id)
                     )
+                }
+
+                override fun onClickRetry(post: PostUIModel) {
+                    mainViewModel.retrySavePost(post.post)
                 }
 
             }
@@ -87,22 +90,28 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
     private fun observePosts(adapter: MainAdapter) {
         mainViewModel.data.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.posts)
-            binding.apply {
-                if (swipeRefresh.isRefreshing) {
-                    swipeRefresh.isRefreshing = state.loading
-                } else {
-                    progress.isVisible = state.loading
-                    errorGroup.isVisible = state.error
-                    tvEmpty.isVisible = state.empty
-                }
+            binding.tvEmpty.isVisible = state.empty
+        }
+
+        mainViewModel.state.observe(viewLifecycleOwner) { state ->
+            if (state is FeedModelState.Error) {
+                Snackbar.make(
+                    binding.root,
+                    state.message,
+                    Snackbar.LENGTH_INDEFINITE
+                ).setAction(R.string.retry_loading) {
+                    mainViewModel.retry()
+                }.show()
             }
+            binding.progress.isVisible = state is FeedModelState.Loading
+            binding.swipeRefresh.isRefreshing = state is FeedModelState.Refreshing
         }
     }
 
     private fun setupListeners() {
         binding.buttonAdd.setOnClickListener {
             findNavController().navigate(
-                PostListFragmentDirections.actionPostListFragmentToPostEditFragment("")
+                PostListFragmentDirections.actionPostListFragmentToPostEditFragment(null)
             )
         }
 
@@ -118,29 +127,24 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
                     is MainViewModel.Command.ShowErrorSnackbar -> {
                         Snackbar.make(
                             binding.root,
-                            getString(R.string.error_loading),
+                            command.message,
                             Snackbar.LENGTH_SHORT
                         ).show()
                     }
+
                     MainViewModel.Command.ShowErrorLayout -> {
                         binding.errorGroup.isVisible = true
                     }
+
                     MainViewModel.Command.ShowContent -> { /* no-op */ }
                 }
             }
         }
     }
 
-    private fun editor(post: Post) {
-        mainViewModel.edit(post)
-        findNavController().navigate(
-            PostListFragmentDirections.actionPostListFragmentToPostEditFragment(post.content)
-        )
-    }
-
     private fun swipeRefresh() {
         binding.swipeRefresh.setOnRefreshListener {
-            mainViewModel.loadPost()
+            mainViewModel.refresh()
         }
     }
 }
