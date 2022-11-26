@@ -1,19 +1,19 @@
 package ru.netology.nmedia.presentation.rvadapter
 
 import androidx.recyclerview.widget.DiffUtil
-import ru.netology.nmedia.domain.model.Post
+import ru.netology.nmedia.domain.model.PostUIModel
 
-class PostItemDiffUtil : DiffUtil.ItemCallback<Post>() {
+class PostItemDiffUtil : DiffUtil.ItemCallback<PostUIModel>() {
 
-    override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
-        return oldItem.id == newItem.id
+    override fun areItemsTheSame(oldItem: PostUIModel, newItem: PostUIModel): Boolean {
+        return oldItem.post.id == newItem.post.id
     }
 
-    override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {
+    override fun areContentsTheSame(oldItem: PostUIModel, newItem: PostUIModel): Boolean {
         return oldItem == newItem
     }
 
-    override fun getChangePayload(oldItem: Post, newItem: Post): Any {
+    override fun getChangePayload(oldItem: PostUIModel, newItem: PostUIModel): Any {
         return Unit
     }
 }

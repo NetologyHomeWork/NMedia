@@ -28,4 +28,6 @@
     <string name="error_loading">Что-то пошло не так. Попробуйте повторить запрос позже</string>
     <string name="empty_posts">Пока здесь нет ни одного поста. Если создать новый пост, то он появится тут</string>
     <string name="picture_attachment">Вложенная картинка</string>
+    <string name="error_connection">Ошибка соединения</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
 </resources>

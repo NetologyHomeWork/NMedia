@@ -135,6 +135,18 @@
             app:icon="@drawable/ic_share_24"
             style="@style/ShareButton" />
 
+        <ImageView
+            android:id="@+id/iv_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_error_post"
+            android:layout_marginEnd="16dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:layout_constraintTop_toTopOf="@id/button_share"
+            app:layout_constraintBottom_toBottomOf="@id/button_share"
+            app:layout_constraintEnd_toEndOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

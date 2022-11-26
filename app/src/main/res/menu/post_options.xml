@@ -9,4 +9,11 @@
         android:id="@+id/remove"
         android:contentDescription="@string/remove"
         android:title="@string/remove" />
+
+    <item
+        android:id="@+id/retry"
+        android:contentDescription="@string/retry_loading"
+        android:title="@string/retry_loading"
+        android:visible="false"
+        tools:visible="true" />
 </menu>

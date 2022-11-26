@@ -33,6 +33,9 @@
                     <action android:name="android.intent.action.VIEW" />
                     <data android:scheme="*" />
                 </intent-filter>
+            <meta-data
+                android:name="com.willowtreeapps.hyperion.core.enableOnStart"
+                android:value="false"/>
         </activity>
         <service android:name=".services.FCMService"
             android:exported="false">

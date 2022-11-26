@@ -1,6 +1,6 @@
 package ru.netology.nmedia.data.network
 
-import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -11,31 +11,29 @@ import ru.netology.nmedia.domain.model.Post
 interface PostService {
 
     @GET("api/slow/posts")
-    fun getAllPosts(): Call<List<Post>>
+    suspend fun getAllPosts(): Response<List<Post>>
 
     @POST("api/posts")
-    fun savePost(
-        @Body post: Post
-    ): Call<Post>
+    suspend fun savePost(@Body post: Post): Response<Post>
 
 
     @GET("api/slow/posts/{id}")
-    fun getById(
+    suspend fun getById(
         @Path("id") postId: Long
-    ): Call<Post>
+    ): Response<Post>
 
     @DELETE("api/posts/{id}")
-    fun removeById(
+    suspend fun removeById(
         @Path("id") postId: Long
-    ): Call<Unit>
+    ): Response<Unit>
 
     @POST("api/posts/{id}/likes")
-    fun likeById(
+    suspend fun likeById(
         @Path("id") postId: Long
-    ): Call<Post>
+    ): Response<Post>
 
     @DELETE("api/posts/{id}/likes")
-    fun dislikeById(
+    suspend fun dislikeById(
         @Path("id") postId: Long
-    ): Call<Post>
+    ): Response<Post>
 }

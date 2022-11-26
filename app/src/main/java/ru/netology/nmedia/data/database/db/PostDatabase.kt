@@ -8,7 +8,7 @@ import ru.netology.nmedia.data.database.PostColumns.DATABASE_NAME
 import ru.netology.nmedia.data.database.dao.PostDao
 import ru.netology.nmedia.data.database.entity.PostEntity
 
-@Database(entities = [PostEntity::class], version = 3, exportSchema = false)
+@Database(entities = [PostEntity::class], version = 4, exportSchema = false)
 abstract class PostDatabase : RoomDatabase() {
 
     abstract fun postDao(): PostDao
@@ -25,7 +25,6 @@ abstract class PostDatabase : RoomDatabase() {
 
         private fun buildDataBase(context: Context) =
             Room.databaseBuilder(context, PostDatabase::class.java, DATABASE_NAME)
-                .allowMainThreadQueries()
                 .build()
     }
 }
