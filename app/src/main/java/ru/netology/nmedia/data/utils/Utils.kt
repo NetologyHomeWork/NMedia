@@ -1,7 +1,6 @@
 package ru.netology.nmedia.data.utils
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import okio.IOException
@@ -71,7 +70,6 @@ internal inline fun<T> wrapException(resourceManager: ResourceManager, block: ()
     try {
         return block.invoke()
     } catch (e: Exception) {
-        Log.e("TAG_Error", "wrapException: ${e.javaClass.simpleName}")
         when(e) {
             is AppException.ApiError -> throw e
             is IOException -> {

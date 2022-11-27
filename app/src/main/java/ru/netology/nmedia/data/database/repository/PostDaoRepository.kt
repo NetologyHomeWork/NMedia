@@ -1,11 +1,11 @@
 package ru.netology.nmedia.data.database.repository
 
-import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.Flow
 import ru.netology.nmedia.data.database.entity.PostEntity
 
 interface PostDaoRepository {
 
-    val allPostEntity: LiveData<List<PostEntity>>
+    val allPostEntity: Flow<List<PostEntity>>
 
     suspend fun save(postEntity: PostEntity)
 

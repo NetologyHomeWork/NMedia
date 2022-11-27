@@ -118,6 +118,11 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
         binding.btnRetry.setOnClickListener {
             mainViewModel.loadPost()
         }
+
+        binding.btnNewPosts.setOnClickListener {
+            binding.rvPostList.smoothScrollToPosition(0)
+            it.isVisible = false
+        }
     }
 
     private fun observeFlow() {
@@ -139,6 +144,10 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
                     MainViewModel.Command.ShowContent -> { /* no-op */ }
                 }
             }
+        }
+
+        mainViewModel.newerCount.observe(viewLifecycleOwner) { count ->
+            binding.btnNewPosts.isVisible = count > 0
         }
     }
 

@@ -1,10 +1,13 @@
 package ru.netology.nmedia.presentation.viewmodel
 
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.data.AppException
 import ru.netology.nmedia.data.repository.PostRepository
@@ -24,9 +27,19 @@ class MainViewModel(
     private val errorPost = MutableStateFlow<Post?>(null)
 
     val data: LiveData<FeedModel>
-        get() = repository.data.map {
-            FeedModel(it, it.isEmpty())
+        get() = liveData(
+            viewModelScope.coroutineContext + Dispatchers.Default
+        ) {
+            repository.data
+                .map(::FeedModel)
+                .collect { emit(it) }
         }
+
+    val newerCount: LiveData<Int> = data.switchMap {
+        Log.e("TAG_COUNT", "newerCount: ${it.posts.lastOrNull()?.post?.id ?: 0L}")
+        repository.getNewerCount(it.posts.lastOrNull()?.post?.id ?: 0L)
+            .asLiveData(Dispatchers.Default)
+    }
 
     private val _state = MutableLiveData<FeedModelState>(FeedModelState.Idle)
     val state: LiveData<FeedModelState> get() = _state
