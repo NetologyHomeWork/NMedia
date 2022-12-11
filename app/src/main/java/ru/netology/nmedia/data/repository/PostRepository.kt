@@ -10,6 +10,8 @@ interface PostRepository {
     val data: Flow<List<PostUIModel>>
     suspend fun getDataAsync(): List<Post>
 
+    suspend fun loadNew()
+
     fun getNewerCount(postId: Long): Flow<Int>
 
     suspend fun likeAsync(post: Post)

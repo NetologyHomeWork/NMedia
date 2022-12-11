@@ -11,7 +11,7 @@ import ru.netology.nmedia.data.database.entity.PostEntity
 @Dao
 interface PostDao {
 
-    @Query("SELECT * FROM $TABLE_NAME ORDER BY id DESC")
+    @Query("SELECT * FROM $TABLE_NAME WHERE is_new = 0 ORDER BY id DESC")
     fun getAll(): Flow<List<PostEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -19,6 +19,9 @@ interface PostDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(posts: List<PostEntity>)
+
+    @Query("UPDATE $TABLE_NAME SET is_new = 0 WHERE is_new = 1")
+    suspend fun updateVisibility()
 
     @Query("UPDATE $TABLE_NAME SET content = :content WHERE id = :postId")
     suspend fun updateContentById(postId: Long, content: String)

@@ -38,21 +38,27 @@ class PostRepositoryImpl(
         if (response.isSuccessful.not() || response.body() == null) {
             throw AppException.ApiError(response.code(), response.message())
         }
-        postDao.insert(response.body()!!.toPostEntityList())
+        postDao.insert(response.body()!!.toPostEntityList(false))
         return@wrapException response.body()!!
+    }
+
+    override suspend fun loadNew() {
+        postDao.updateVisibility()
     }
 
     override fun getNewerCount(postId: Long): Flow<Int> = flow {
         while (true) {
             try {
-                delay(10_000L)
+                delay(15_000L)
                 val response = postService.getNewer(postId)
                 if (response.isSuccessful.not()) {
                     throw AppException.ApiError(response.code(), response.message())
                 }
-
-                val body = response.body() ?: throw AppException.ApiError(response.code(), response.message())
-                postDao.insert(body.toPostEntityList())
+                val body = response.body() ?: throw AppException.ApiError(
+                    response.code(),
+                    response.message()
+                )
+                postDao.insert(body.toPostEntityList(true))
                 emit(body.size)
             } catch (e: CancellationException) {
                 throw e
@@ -95,7 +101,10 @@ class PostRepositoryImpl(
 
     override suspend fun removeItemAsync(id: Long) = wrapException(resourceManager) {
         val response = postService.removeById(id)
-        if (response.isSuccessful.not()) throw AppException.ApiError(response.code(), response.message())
+        if (response.isSuccessful.not()) throw AppException.ApiError(
+            response.code(),
+            response.message()
+        )
         postDao.removeById(id)
     }
 
@@ -106,7 +115,10 @@ class PostRepositoryImpl(
             postService.dislikeById(post.id)
         }
 
-        if (response.isSuccessful.not()) throw AppException.ApiError(response.code(), response.message())
+        if (response.isSuccessful.not()) throw AppException.ApiError(
+            response.code(),
+            response.message()
+        )
 
         val newPost = post.copy(
             likesCount = if (post.isLike.not()) post.likesCount + 1 else post.likesCount - 1,

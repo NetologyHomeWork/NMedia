@@ -47,7 +47,11 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
             binding.postDetail.apply {
                 bindPostItemLayout(
                     this,
-                    PostUIModel(post, false),
+                    PostUIModel(
+                        post = post,
+                        isError = false,
+                        isNew = false
+                    ),
                     viewModel,
                     findNavController()
                 )
