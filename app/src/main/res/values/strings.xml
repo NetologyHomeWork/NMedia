@@ -29,4 +29,5 @@
     <string name="picture_attachment">Picture Attachment</string>
     <string name="error_connection">Error connection</string>
     <string name="unknown_error">Unknown error</string>
+    <string name="new_posts">New Posts</string>
 </resources>

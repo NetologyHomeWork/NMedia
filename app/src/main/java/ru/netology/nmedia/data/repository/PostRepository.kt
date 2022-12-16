@@ -1,14 +1,18 @@
 package ru.netology.nmedia.data.repository
 
 import android.content.Intent
-import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.Flow
 import ru.netology.nmedia.domain.model.Post
 import ru.netology.nmedia.domain.model.PostUIModel
 
 interface PostRepository {
 
-    val data: LiveData<List<PostUIModel>>
+    val data: Flow<List<PostUIModel>>
     suspend fun getDataAsync(): List<Post>
+
+    suspend fun loadNew()
+
+    fun getNewerCount(postId: Long): Flow<Int>
 
     suspend fun likeAsync(post: Post)
 

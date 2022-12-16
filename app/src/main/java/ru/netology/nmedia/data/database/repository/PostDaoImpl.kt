@@ -1,7 +1,7 @@
 package ru.netology.nmedia.data.database.repository
 
 import android.app.Application
-import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.Flow
 import ru.netology.nmedia.data.database.db.PostDatabase
 import ru.netology.nmedia.data.database.entity.PostEntity
 
@@ -11,7 +11,7 @@ class PostDaoImpl(
 
     private val postDao = PostDatabase.getInstance(application).postDao()
 
-    override val allPostEntity: LiveData<List<PostEntity>>
+    override val allPostEntity: Flow<List<PostEntity>>
         get() = postDao.getAll()
 
     override suspend fun save(postEntity: PostEntity) {

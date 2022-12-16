@@ -2,9 +2,9 @@ package ru.netology.nmedia.presentation.viewmodel
 
 import android.content.Intent
 import androidx.lifecycle.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.data.AppException
 import ru.netology.nmedia.data.repository.PostRepository
@@ -17,16 +17,31 @@ class MainViewModel(
     private val repository: PostRepository
 ) : ViewModel() {
 
-    private val _commands = MutableStateFlow<Command>(Command.ShowContent)
-    val commands = _commands.asStateFlow()
+    private val _commands = MutableSharedFlow<Command>(
+        replay = 0,
+        extraBufferCapacity = 10,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val commands = _commands.asSharedFlow()
 
     private val responseError = MutableStateFlow<ResponseError?>(null)
     private val errorPost = MutableStateFlow<Post?>(null)
 
     val data: LiveData<FeedModel>
-        get() = repository.data.map {
-            FeedModel(it, it.isEmpty())
+        get() = liveData(
+            viewModelScope.coroutineContext + Dispatchers.Default
+        ) {
+            repository.data
+                .map { posts ->
+                    FeedModel(posts, posts.isEmpty())
+                }
+                .collect { emit(it) }
         }
+
+    val newerCount: LiveData<Int> = data.switchMap {
+        repository.getNewerCount(it.posts.firstOrNull()?.post?.id ?: 0L)
+            .asLiveData(Dispatchers.Default)
+    }
 
     private val _state = MutableLiveData<FeedModelState>(FeedModelState.Idle)
     val state: LiveData<FeedModelState> get() = _state
@@ -137,6 +152,13 @@ class MainViewModel(
         }
     }
 
+    fun loadNew() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.loadNew()
+            _commands.tryEmit(Command.Scroll)
+        }
+    }
+
     sealed interface ResponseError {
         object LoadPostError : ResponseError
         object SavePostError : ResponseError
@@ -144,9 +166,9 @@ class MainViewModel(
         object DeletePostError : ResponseError
     }
 
-    sealed class Command {
-        class ShowErrorSnackbar(val message: String) : Command()
-        object ShowErrorLayout : Command()
-        object ShowContent : Command()
+    sealed interface Command {
+        class ShowErrorSnackbar(val message: String) : Command
+        object ShowErrorLayout : Command
+        object Scroll : Command
     }
 }

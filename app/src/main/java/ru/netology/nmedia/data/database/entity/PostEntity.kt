@@ -17,7 +17,8 @@ data class PostEntity(
     @ColumnInfo(name = "is_like") val isLike: Boolean,
     @ColumnInfo(name = "like_count") val likesCount: Int,
     @ColumnInfo(name = "author_avatar") val authorAvatar: String,
-    @ColumnInfo(name = "is_error") val isError: Boolean
+    @ColumnInfo(name = "is_error") val isError: Boolean,
+    @ColumnInfo(name = "is_new") val isNew: Boolean
     /*val description: String?,
     val type: String?,
     val url: String?*/
@@ -40,7 +41,8 @@ fun PostEntity.toPost(): Post = Post(
 
 fun PostEntity.toPostUIModel(): PostUIModel = PostUIModel(
     post = this.toPost(),
-    isError = this.isError
+    isError = this.isError,
+    isNew = isNew
 )
 
 fun List<PostEntity>.toPostList(): List<Post> {

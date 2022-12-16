@@ -13,6 +13,11 @@ interface PostService {
     @GET("api/slow/posts")
     suspend fun getAllPosts(): Response<List<Post>>
 
+    @GET("api/posts/{id}/newer")
+    suspend fun getNewer(
+        @Path("id") postId: Long
+    ): Response<List<Post>>
+
     @POST("api/posts")
     suspend fun savePost(@Body post: Post): Response<Post>
 

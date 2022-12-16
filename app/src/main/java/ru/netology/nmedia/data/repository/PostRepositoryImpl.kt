@@ -2,8 +2,13 @@ package ru.netology.nmedia.data.repository
 
 import android.content.Intent
 import android.net.Uri
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import okio.IOException
 import ru.netology.nmedia.R
 import ru.netology.nmedia.data.AppException
@@ -25,17 +30,53 @@ class PostRepositoryImpl(
     private val resourceManager: ResourceManager
 ) : PostRepository {
 
-    override val data: LiveData<List<PostUIModel>> =
-        postDao.getAll().map(List<PostEntity>::toPostUIList)
+    override val data: Flow<List<PostUIModel>> =
+        postDao.getAll().map(List<PostEntity>::toPostUIList).flowOn(Dispatchers.Default)
 
     override suspend fun getDataAsync(): List<Post> = wrapException(resourceManager) {
         val response = postService.getAllPosts()
         if (response.isSuccessful.not() || response.body() == null) {
             throw AppException.ApiError(response.code(), response.message())
         }
-        postDao.insert(response.body()!!.toPostEntityList())
+        postDao.insert(response.body()!!.toPostEntityList(false))
         return@wrapException response.body()!!
     }
+
+    override suspend fun loadNew() {
+        postDao.updateVisibility()
+    }
+
+    override fun getNewerCount(postId: Long): Flow<Int> = flow {
+        while (true) {
+            try {
+                delay(15_000L)
+                val response = postService.getNewer(postId)
+                if (response.isSuccessful.not()) {
+                    throw AppException.ApiError(response.code(), response.message())
+                }
+                val body = response.body() ?: throw AppException.ApiError(
+                    response.code(),
+                    response.message()
+                )
+                postDao.insert(body.toPostEntityList(true))
+                emit(body.size)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                when (e) {
+                    is AppException.ApiError -> throw e
+                    is IOException -> {
+                        throw AppException.NetworkError(resourceManager.getString(R.string.error_connection))
+                    }
+
+                    else -> {
+                        throw AppException.UnknownError(resourceManager.getString(R.string.unknown_error))
+                    }
+                }
+            }
+        }
+    }
+
     override suspend fun savePostAsync(post: Post) {
         try {
             val response = postService.savePost(post)
@@ -60,7 +101,10 @@ class PostRepositoryImpl(
 
     override suspend fun removeItemAsync(id: Long) = wrapException(resourceManager) {
         val response = postService.removeById(id)
-        if (response.isSuccessful.not()) throw AppException.ApiError(response.code(), response.message())
+        if (response.isSuccessful.not()) throw AppException.ApiError(
+            response.code(),
+            response.message()
+        )
         postDao.removeById(id)
     }
 
@@ -71,7 +115,10 @@ class PostRepositoryImpl(
             postService.dislikeById(post.id)
         }
 
-        if (response.isSuccessful.not()) throw AppException.ApiError(response.code(), response.message())
+        if (response.isSuccessful.not()) throw AppException.ApiError(
+            response.code(),
+            response.message()
+        )
 
         val newPost = post.copy(
             likesCount = if (post.isLike.not()) post.likesCount + 1 else post.likesCount - 1,

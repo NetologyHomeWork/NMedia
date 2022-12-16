@@ -30,4 +30,5 @@
     <string name="picture_attachment">Вложенная картинка</string>
     <string name="error_connection">Ошибка соединения</string>
     <string name="unknown_error">Неизвестная ошибка</string>
+    <string name="new_posts">Новые посты</string>
 </resources>

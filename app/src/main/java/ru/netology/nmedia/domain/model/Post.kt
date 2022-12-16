@@ -12,10 +12,8 @@ data class Post(
     val content: String = "",
     val published: String = "",
     val authorAvatar: String = "",
-    @Json(name = "likedByMe")
-    val isLike: Boolean = false,
-    @Json(name = "likes")
-    val likesCount: Int = 0,
+    @Json(name = "likedByMe") val isLike: Boolean = false,
+    @Json(name = "likes") val likesCount: Int = 0,
     val attachment: Attachment? = null,
 ) : Parcelable
 
@@ -26,7 +24,7 @@ data class Attachment(
     val url: String = ""
 ) : Parcelable
 
-fun Post.toPostEntity(): PostEntity = PostEntity(
+fun Post.toPostEntity(isNew: Boolean = false): PostEntity = PostEntity(
     id = this.id,
     author = this.author,
     content = this.content,
@@ -34,12 +32,13 @@ fun Post.toPostEntity(): PostEntity = PostEntity(
     isLike = this.isLike,
     likesCount = this.likesCount,
     authorAvatar = this.authorAvatar,
-    isError = false
+    isError = false,
+    isNew = isNew
     /*description = this.attachment?.description,
     type = this.attachment?.type,
     url = this.attachment?.url*/
 )
 
-fun List<Post>.toPostEntityList(): List<PostEntity> {
-    return this.map { it.toPostEntity() }
+fun List<Post>.toPostEntityList(isNew: Boolean = false): List<PostEntity> {
+    return this.map { it.toPostEntity(isNew) }
 }

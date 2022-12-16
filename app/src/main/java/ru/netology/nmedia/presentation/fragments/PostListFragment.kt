@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentPostListBinding
@@ -118,11 +117,16 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
         binding.btnRetry.setOnClickListener {
             mainViewModel.loadPost()
         }
+
+        binding.btnNewPosts.setOnClickListener {
+            mainViewModel.loadNew()
+            it.isVisible = false
+        }
     }
 
     private fun observeFlow() {
         lifecycleScope.launchWhenStarted {
-            mainViewModel.commands.collectLatest { command ->
+            mainViewModel.commands.collect { command ->
                 when (command) {
                     is MainViewModel.Command.ShowErrorSnackbar -> {
                         Snackbar.make(
@@ -136,9 +140,15 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
                         binding.errorGroup.isVisible = true
                     }
 
-                    MainViewModel.Command.ShowContent -> { /* no-op */ }
+                    MainViewModel.Command.Scroll -> {
+                        binding.rvPostList.smoothScrollToPosition(0)
+                    }
                 }
             }
+        }
+
+        mainViewModel.newerCount.observe(viewLifecycleOwner) { count ->
+            binding.btnNewPosts.isVisible = count > 0
         }
     }
 
