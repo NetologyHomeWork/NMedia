@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostItemBinding
+import ru.netology.nmedia.domain.model.AttachmentType
 import ru.netology.nmedia.domain.model.Post
 import ru.netology.nmedia.domain.model.PostUIModel
 import ru.netology.nmedia.presentation.fragments.PostDetailFragmentDirections
@@ -107,11 +108,11 @@ private fun bindingItem(binding: PostItemBinding, post: PostUIModel) {
             .circleCrop()
             .into(ivIcon)
 
-        if (post.post.attachment != null && post.post.attachment.type.equals("image", true)) {
+        if (post.post.attachment != null && post.post.attachment.type == AttachmentType.IMAGE) {
             ivAttachmentPicture.isVisible = true
 
             Glide.with(ivAttachmentPicture)
-                .load("${BuildConfig.BASE_URL}images/${post.post.attachment.url}")
+                .load("${BuildConfig.BASE_URL}media/${post.post.attachment.url}")
                 .timeout(10_000)
                 .placeholder(R.drawable.ic_loading)
                 .error(R.drawable.ic_error)
@@ -136,6 +137,10 @@ private fun adapterListenerAction(binding: PostItemBinding, post: PostUIModel, l
 
         binding.root.setOnClickListener {
             listener.onClickPost(post)
+        }
+
+        binding.ivAttachmentPicture.setOnClickListener {
+            listener.onPhotoClick(post)
         }
     }
 }

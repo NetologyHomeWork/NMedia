@@ -95,14 +95,27 @@
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <ImageButton
+        android:id="@+id/btn_scroll_down"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="96dp"
+        android:background="@drawable/shape_oval_scroll_button"
+        android:contentDescription="@string/scroll_to_position"
+        android:padding="28dp"
+        android:visibility="gone"
+        android:layout_marginEnd="16dp"
+        android:layout_gravity="end|bottom"
+        tools:visibility="visible" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
         android:contentDescription="@string/add_new_post"
-        android:layout_gravity="bottom|end"
         app:srcCompat="@drawable/ic_add_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

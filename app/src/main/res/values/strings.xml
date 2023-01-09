@@ -30,4 +30,8 @@
     <string name="error_connection">Error connection</string>
     <string name="unknown_error">Unknown error</string>
     <string name="new_posts">New Posts</string>
+    <string name="posts_list">Posts List</string>
+    <string name="posts_detail">Post Detail</string>
+    <string name="posts_edit">Edit Post</string>
+    <string name="scroll_to_position">Edit Post</string>
 </resources>

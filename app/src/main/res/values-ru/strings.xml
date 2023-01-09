@@ -31,4 +31,8 @@
     <string name="error_connection">Ошибка соединения</string>
     <string name="unknown_error">Неизвестная ошибка</string>
     <string name="new_posts">Новые посты</string>
+    <string name="posts_list">Список Постов</string>
+    <string name="posts_detail">Информация о посте</string>
+    <string name="posts_edit">Редактирование</string>
+    <string name="scroll_to_position">Скролить</string>
 </resources>

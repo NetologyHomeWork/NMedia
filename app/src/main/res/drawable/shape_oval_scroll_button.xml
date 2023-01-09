@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval" android:tint="#808F8F8F" />
+    </item>
+    <item
+        android:height="24dp"
+        android:width="24dp"
+        android:end="2dp"
+        android:start="2dp"
+        android:top="2dp"
+        android:bottom="2dp"
+        android:drawable="@drawable/ic_keyboard_arrow_down"
+        android:gravity="center" />
+</layer-list>

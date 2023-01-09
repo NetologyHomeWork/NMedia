@@ -7,6 +7,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.netology.nmedia.R
@@ -80,6 +82,11 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
                     mainViewModel.retrySavePost(post.post)
                 }
 
+                override fun onPhotoClick(post: PostUIModel) {
+                    val direction = PostListFragmentDirections
+                        .actionPostListFragmentToPhotoFragment(checkNotNull(post.post.attachment).url)
+                    findNavController().navigate(direction)
+                }
             }
         )
         rvPostItem.adapter = adapter
@@ -122,6 +129,22 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
             mainViewModel.loadNew()
             it.isVisible = false
         }
+
+        binding.rvPostList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                binding.btnScrollDown.isVisible = dy > 0
+                if ((binding.rvPostList.layoutManager as LinearLayoutManager)
+                        .findLastCompletelyVisibleItemPosition() == (binding.rvPostList.layoutManager as LinearLayoutManager).itemCount - 1) {
+                    binding.btnScrollDown.isVisible = false
+                }
+            }
+        })
+
+        binding.btnScrollDown.setOnClickListener {
+            binding.rvPostList.smoothScrollToPosition(checkNotNull(binding.rvPostList.adapter).itemCount)
+        }
     }
 
     private fun observeFlow() {
@@ -143,6 +166,7 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
                     MainViewModel.Command.Scroll -> {
                         binding.rvPostList.smoothScrollToPosition(0)
                     }
+                    else -> { /* no-op */ }
                 }
             }
         }

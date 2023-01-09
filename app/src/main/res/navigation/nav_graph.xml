@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/postListFragment"
         android:name="ru.netology.nmedia.presentation.fragments.PostListFragment"
-        android:label="fragment_post_list"
+        android:label="@string/posts_list"
         tools:layout="@layout/fragment_post_list">
         <action
             android:id="@+id/action_postListFragment_to_postEditFragment"
@@ -24,11 +24,14 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out" />
+        <action
+            android:id="@+id/action_postListFragment_to_photoFragment"
+            app:destination="@id/photoFragment" />
     </fragment>
     <fragment
         android:id="@+id/postDetailFragment"
         android:name="ru.netology.nmedia.presentation.fragments.PostDetailFragment"
-        android:label="fragment_post_detail"
+        android:label="@string/posts_detail"
         tools:layout="@layout/fragment_post_detail">
         <action
             android:id="@+id/action_postDetailFragment_to_postEditFragment"
@@ -40,15 +43,27 @@
         <argument
             android:name="postId"
             app:argType="long" />
+        <action
+            android:id="@+id/action_postDetailFragment_to_photoFragment"
+            app:destination="@id/photoFragment" />
     </fragment>
     <fragment
         android:id="@+id/postEditFragment"
         android:name="ru.netology.nmedia.presentation.fragments.PostEditFragment"
-        android:label="fragment_post_edit"
+        android:label="@string/posts_edit"
         tools:layout="@layout/fragment_post_edit">
         <argument
             android:name="post"
             app:argType="ru.netology.nmedia.domain.model.Post"
             app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/photoFragment"
+        android:name="ru.netology.nmedia.presentation.fragments.PhotoFragment"
+        android:label=""
+        tools:layout="@layout/fragment_photo" >
+        <argument
+            android:name="pathPhoto"
+            app:argType="string" />
     </fragment>
 </navigation>

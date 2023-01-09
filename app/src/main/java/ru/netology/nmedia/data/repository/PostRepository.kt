@@ -2,6 +2,7 @@ package ru.netology.nmedia.data.repository
 
 import android.content.Intent
 import kotlinx.coroutines.flow.Flow
+import ru.netology.nmedia.domain.model.PhotoModel
 import ru.netology.nmedia.domain.model.Post
 import ru.netology.nmedia.domain.model.PostUIModel
 
@@ -20,7 +21,7 @@ interface PostRepository {
 
     suspend fun removeItemAsync(id: Long)
 
-    suspend fun savePostAsync(post: Post)
+    suspend fun savePostAsync(post: Post, model: PhotoModel? = null)
 
     fun launchYoutubeVideo(post: Post): Intent
 
