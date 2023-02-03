@@ -5,10 +5,7 @@ import android.net.Uri
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
@@ -45,10 +42,10 @@ class PostRepositoryImpl(
         postDao.updateVisibility()
     }
 
-    override fun getNewerCount(postId: Long): Flow<Int> = flow {
+    override fun getNewerCount(postId: Long): Flow<Int> = callbackFlow {
         while (true) {
             try {
-                delay(15_000L)
+                delay(3_000L)
                 val response = postService.getNewer(postId)
                 if (response.isSuccessful.not()) {
                     throw AppException.ApiError(response.code(), response.message())
@@ -58,7 +55,7 @@ class PostRepositoryImpl(
                     response.message()
                 )
                 postDao.insert(body.toPostEntityList(true))
-                emit(body.size)
+                trySend(body.size)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

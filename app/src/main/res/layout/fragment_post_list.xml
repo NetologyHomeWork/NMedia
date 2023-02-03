@@ -14,6 +14,7 @@
         android:layout_gravity="center|top"
         android:layout_marginTop="16dp"
         android:text="@string/new_posts"
+        android:backgroundTint="@color/purple_700"
         android:drawableLeft="@drawable/ic_keyboard_arrow_up"
         android:visibility="gone"
         tools:visibility="visible" />
@@ -114,7 +115,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_marginEnd="@dimen/fab_margin"
+        android:backgroundTint="@color/purple_700"
         android:layout_marginBottom="@dimen/fab_margin"
+        app:tint="@color/white"
         android:contentDescription="@string/add_new_post"
         app:srcCompat="@drawable/ic_add_24" />
 

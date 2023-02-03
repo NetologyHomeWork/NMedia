@@ -13,10 +13,33 @@
         <item name="iconGravity">textStart</item>
     </style>
 
-    <style name="PopMenuDivider" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
+    <style name="PopMenuDivider" parent="Widget.AppCompat.Light.ListView.DropDown">
         <item name="itemBackground">@color/default_post_editor_background</item>
         <item name="android:divider">@color/default_text_color</item>
         <item name="android:dividerHeight">1dp</item>
-        <item name="popupTheme">@color/default_post_editor_background</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="selectableItemBackground">@color/gray</item>
+        <item name="android:selectableItemBackground">@color/gray</item>
+    </style>
+
+    <style name="RoundedInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeWidthFocused">1dp</item>
+        <item name="boxStrokeColor">@color/edit_text_stroke_color</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="android:textColorHint">@color/default_text_color</item>
+        <item name="hintTextColor">@color/purple_700</item>
+        <item name="errorTextColor">@color/color_error</item>
+        <item name="boxStrokeErrorColor">@color/color_error</item>
+        <item name="errorIconTint">@color/color_error</item>
+        <item name="errorIconDrawable">@drawable/ic_error_input</item>
+        <item name="endIconTint">@color/default_text_color</item>
+        <item name="endIconMode">clear_text</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.Avatar" parent="">
+        <item name="cornerSize">50%</item>
     </style>
 </resources>

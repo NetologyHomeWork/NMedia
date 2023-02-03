@@ -88,7 +88,7 @@ class PostEditFragment : Fragment(R.layout.fragment_post_edit) {
                 .compress(IMAGE_MAX_SIZE)
                 .provider(ImageProvider.GALLERY)
                 .galleryMimeTypes(
-                    arrayOf("image/png", "image/jpeg")
+                    arrayOf(IMAGE_PNG_TYPE, IMAGE_JPEG_TYPE)
                 )
                 .createIntent(photoLauncher::launch)
         }
@@ -166,5 +166,7 @@ class PostEditFragment : Fragment(R.layout.fragment_post_edit) {
 
     companion object {
         private const val IMAGE_MAX_SIZE = 1024
+        private const val IMAGE_PNG_TYPE = "image/png"
+        private const val IMAGE_JPEG_TYPE = "image/jpeg"
     }
 }

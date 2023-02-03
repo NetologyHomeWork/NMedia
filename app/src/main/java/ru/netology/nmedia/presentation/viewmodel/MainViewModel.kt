@@ -4,10 +4,12 @@ import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.data.AppException
+import ru.netology.nmedia.data.auth.AppAuth
 import ru.netology.nmedia.data.repository.PostRepository
 import ru.netology.nmedia.domain.model.FeedModel
 import ru.netology.nmedia.domain.model.FeedModelState
@@ -15,6 +17,7 @@ import ru.netology.nmedia.domain.model.PhotoModel
 import ru.netology.nmedia.domain.model.Post
 import java.io.File
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModel(
     private val repository: PostRepository
 ) : ViewModel() {
@@ -32,20 +35,23 @@ class MainViewModel(
     private val _blockContent = MutableStateFlow(false)
     val blockContent = _blockContent.asStateFlow()
 
-    val data: LiveData<FeedModel>
-        get() = liveData(
-            viewModelScope.coroutineContext + Dispatchers.Default
-        ) {
+    val data = AppAuth.getInstance().state
+        .map { it?.id }
+        .flatMapLatest { id ->
             repository.data
                 .map { posts ->
-                    FeedModel(posts, posts.isEmpty())
+                    FeedModel(
+                        posts.map { it.copy(ownedByMe = it.post.authorId == id) },
+                        posts.isEmpty()
+                    )
                 }
-                .collect { emit(it) }
         }
 
-    val newerCount: LiveData<Int> = data.switchMap {
+    val newerCount = data.flatMapLatest {
         repository.getNewerCount(it.posts.firstOrNull()?.post?.id ?: 0L)
-            .asLiveData(Dispatchers.Default)
+    }.catch { throwable ->
+        val e = throwable as? AppException ?: return@catch
+        _commands.tryEmit(Command.ShowErrorSnackbar(e.message))
     }
 
     private val _state = MutableLiveData<FeedModelState>(FeedModelState.Idle)

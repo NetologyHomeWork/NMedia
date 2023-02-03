@@ -35,4 +35,23 @@
     <string name="posts_detail">Информация о посте</string>
     <string name="posts_edit">Редактирование</string>
     <string name="scroll_to_position">Скролить</string>
+    <string name="sign_in">Войти</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="logout">Выйти</string>
+    <string name="enter_your_login">Введите логин</string>
+    <string name="enter_your_password">Введите пароль</string>
+    <string name="enter_your_name">Введите Ваше имя</string>
+    <string name="repeat_password">Повторите пароль</string>
+    <string name="camera">Камера</string>
+    <string name="gallery">Галерея</string>
+    <string name="delete">Удалить</string>
+    <string name="error_login">Поле логина не может быть пустым</string>
+    <string name="error_password">Поле пароля не может быть пустым</string>
+    <string name="error_name">Поле имени не может быть пустым</string>
+    <string name="error_password_mismatch">Пароли не совпадают</string>
+    <string name="cancel">Отмена</string>
+    <string name="error_like_post">Чтобы лайкнуть пост Вам нужно быть авторизованным</string>
+    <string name="error_add_post">Чтобы добавить новый пост Вам нужно быть авторизованным</string>
+    <string name="confirm_logout">Вы уверены что вы хотите выйти</string>
+    <string name="confirm">Подтвердить</string>
 </resources>

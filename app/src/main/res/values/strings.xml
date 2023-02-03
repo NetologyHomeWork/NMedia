@@ -34,4 +34,23 @@
     <string name="posts_detail">Post Detail</string>
     <string name="posts_edit">Edit Post</string>
     <string name="scroll_to_position">Edit Post</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="logout">Logout</string>
+    <string name="enter_your_login">Enter your login</string>
+    <string name="enter_your_password">Enter your password</string>
+    <string name="enter_your_name">Enter your name</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="delete">Delete</string>
+    <string name="error_login">Field login can\'t be empty</string>
+    <string name="error_password">Field password can\'t be empty</string>
+    <string name="error_name">Field name can\'t be empty</string>
+    <string name="error_password_mismatch">Passwords mismatch</string>
+    <string name="cancel">Cancel</string>
+    <string name="error_like_post">We need to be auth if you want to like this post</string>
+    <string name="error_add_post">You need be auth if you want to add new post</string>
+    <string name="confirm_logout">You really want to logout</string>
+    <string name="confirm">Confirm</string>
 </resources>

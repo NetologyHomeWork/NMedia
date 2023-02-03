@@ -9,12 +9,13 @@ import ru.netology.nmedia.data.database.entity.PostEntity
 data class Post(
     val id: Long = 0,
     val author: String = "",
+    val authorId: Long = 0,
     val content: String = "",
     val published: String = "",
     val authorAvatar: String = "",
     @Json(name = "likedByMe") val isLike: Boolean = false,
     @Json(name = "likes") val likesCount: Int = 0,
-    val attachment: Attachment? = null,
+    val attachment: Attachment? = null
 ) : Parcelable
 
 @Parcelize
@@ -32,6 +33,7 @@ enum class AttachmentType : Parcelable {
 fun Post.toPostEntity(isNew: Boolean = false): PostEntity = PostEntity(
     id = this.id,
     author = this.author,
+    authorId = authorId,
     content = this.content,
     published = this.published,
     isLike = this.isLike,
