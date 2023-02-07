@@ -16,4 +16,6 @@ interface AdapterListener {
     fun onClickPost(post: PostUIModel)
 
     fun onClickRetry(post: PostUIModel)
+
+    fun onPhotoClick(post: PostUIModel)
 }

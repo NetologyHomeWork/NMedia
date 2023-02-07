@@ -1,18 +1,23 @@
 package ru.netology.nmedia.presentation.viewmodel
 
 import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.data.AppException
+import ru.netology.nmedia.data.auth.AppAuth
 import ru.netology.nmedia.data.repository.PostRepository
-import ru.netology.nmedia.data.utils.SingleLiveEvent
 import ru.netology.nmedia.domain.model.FeedModel
 import ru.netology.nmedia.domain.model.FeedModelState
+import ru.netology.nmedia.domain.model.PhotoModel
 import ru.netology.nmedia.domain.model.Post
+import java.io.File
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModel(
     private val repository: PostRepository
 ) : ViewModel() {
@@ -27,27 +32,33 @@ class MainViewModel(
     private val responseError = MutableStateFlow<ResponseError?>(null)
     private val errorPost = MutableStateFlow<Post?>(null)
 
-    val data: LiveData<FeedModel>
-        get() = liveData(
-            viewModelScope.coroutineContext + Dispatchers.Default
-        ) {
+    private val _blockContent = MutableStateFlow(false)
+    val blockContent = _blockContent.asStateFlow()
+
+    val data = AppAuth.getInstance().state
+        .map { it?.id }
+        .flatMapLatest { id ->
             repository.data
                 .map { posts ->
-                    FeedModel(posts, posts.isEmpty())
+                    FeedModel(
+                        posts.map { it.copy(ownedByMe = it.post.authorId == id) },
+                        posts.isEmpty()
+                    )
                 }
-                .collect { emit(it) }
         }
 
-    val newerCount: LiveData<Int> = data.switchMap {
+    val newerCount = data.flatMapLatest {
         repository.getNewerCount(it.posts.firstOrNull()?.post?.id ?: 0L)
-            .asLiveData(Dispatchers.Default)
+    }.catch { throwable ->
+        val e = throwable as? AppException ?: return@catch
+        _commands.tryEmit(Command.ShowErrorSnackbar(e.message))
     }
 
     private val _state = MutableLiveData<FeedModelState>(FeedModelState.Idle)
     val state: LiveData<FeedModelState> get() = _state
 
-    private val _postCreated = SingleLiveEvent<Unit>()
-    val postCreated: LiveData<Unit> get() = _postCreated
+    private val _photo = MutableLiveData<PhotoModel?>(null)
+    val photo: LiveData<PhotoModel?> get() = _photo
 
     init {
         loadPost()
@@ -85,13 +96,19 @@ class MainViewModel(
     fun save(post: Post) {
         viewModelScope.launch {
             try {
-                repository.savePostAsync(post)
+                _blockContent.tryEmit(true)
+                _photo.value?.let { photo ->
+                    repository.savePostAsync(post, photo)
+                } ?: run {
+                    repository.savePostAsync(post)
+                }
             } catch (e: AppException) {
                 responseError.tryEmit(ResponseError.SavePostError)
                 errorPost.tryEmit(post)
                 _state.value = FeedModelState.Error(e.message)
             } finally {
-                _postCreated.setValue(Unit)
+                _commands.tryEmit(Command.SavePost)
+                _blockContent.tryEmit(false)
             }
         }
     }
@@ -159,6 +176,12 @@ class MainViewModel(
         }
     }
 
+    fun changePhoto(uri: Uri?, file: File?) {
+        _photo.value = if (uri != null && file != null) {
+            PhotoModel(uri, file)
+        } else null
+    }
+
     sealed interface ResponseError {
         object LoadPostError : ResponseError
         object SavePostError : ResponseError
@@ -170,5 +193,6 @@ class MainViewModel(
         class ShowErrorSnackbar(val message: String) : Command
         object ShowErrorLayout : Command
         object Scroll : Command
+        object SavePost : Command
     }
 }

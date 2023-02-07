@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostItemBinding
+import ru.netology.nmedia.domain.model.AttachmentType
 import ru.netology.nmedia.domain.model.Post
 import ru.netology.nmedia.domain.model.PostUIModel
 import ru.netology.nmedia.presentation.fragments.PostDetailFragmentDirections
@@ -17,9 +18,10 @@ import ru.netology.nmedia.presentation.viewmodel.PostDetailViewModel
 fun bindPostItemLayout(
     binding: PostItemBinding,
     post: PostUIModel,
-    listener: AdapterListener
+    listener: AdapterListener,
+    isAuth: Boolean
 ) {
-    bindingItem(binding, post)
+    bindingItem(binding, post, isAuth)
     adapterListenerAction(binding, post, listener)
 }
 
@@ -27,13 +29,15 @@ fun bindPostItemLayout(
     binding: PostItemBinding,
     post: PostUIModel,
     viewModel: PostDetailViewModel,
-    navController: NavController
+    navController: NavController,
+    isAuth: Boolean
 ) {
-    bindingItem(binding, post)
-    viewModelListenerAction(binding, post, viewModel, navController)
+    bindingItem(binding, post, isAuth)
+    viewModelListenerAction(binding, post, viewModel, navController, isAuth)
 }
 
 private fun showMenuInListItem(view: View, post: PostUIModel, listener: AdapterListener) {
+    if (post.ownedByMe.not()) return
     PopupMenu(view.context, view).apply {
         inflate(R.menu.post_options)
         if (post.isError) {
@@ -87,7 +91,7 @@ private fun showMenuInDetailItem(
     }.show()
 }
 
-private fun bindingItem(binding: PostItemBinding, post: PostUIModel) {
+private fun bindingItem(binding: PostItemBinding, post: PostUIModel, isAuth: Boolean) {
     binding.apply {
         tvTitle.text = post.post.author
         tvDate.text = post.post.published.formatDate()
@@ -98,6 +102,15 @@ private fun bindingItem(binding: PostItemBinding, post: PostUIModel) {
         cbLike.isEnabled = post.isError.not()
         buttonShare.isEnabled = post.isError.not()
         binding.root.isEnabled = post.isError.not()
+        binding.ivMore.isVisible = post.ownedByMe
+
+        cbLike.setOnCheckedChangeListener { _, isChecked ->
+            if (isAuth.not()) {
+                cbLike.isChecked = false
+            } else {
+                cbLike.isChecked = isChecked
+            }
+        }
 
         Glide.with(ivIcon)
             .load("${BuildConfig.BASE_URL}avatars/${post.post.authorAvatar}")
@@ -107,11 +120,11 @@ private fun bindingItem(binding: PostItemBinding, post: PostUIModel) {
             .circleCrop()
             .into(ivIcon)
 
-        if (post.post.attachment != null && post.post.attachment.type.equals("image", true)) {
+        if (post.post.attachment != null && post.post.attachment.type == AttachmentType.IMAGE) {
             ivAttachmentPicture.isVisible = true
 
             Glide.with(ivAttachmentPicture)
-                .load("${BuildConfig.BASE_URL}images/${post.post.attachment.url}")
+                .load("${BuildConfig.BASE_URL}media/${post.post.attachment.url}")
                 .timeout(10_000)
                 .placeholder(R.drawable.ic_loading)
                 .error(R.drawable.ic_error)
@@ -137,6 +150,10 @@ private fun adapterListenerAction(binding: PostItemBinding, post: PostUIModel, l
         binding.root.setOnClickListener {
             listener.onClickPost(post)
         }
+
+        binding.ivAttachmentPicture.setOnClickListener {
+            listener.onPhotoClick(post)
+        }
     }
 }
 
@@ -144,11 +161,17 @@ private fun viewModelListenerAction(
     binding: PostItemBinding,
     post: PostUIModel,
     viewModel: PostDetailViewModel,
-    navController: NavController
+    navController: NavController,
+    isAuth: Boolean
 ) {
     with(binding) {
+
         cbLike.setOnClickListener {
-            viewModel.like(post.post)
+            if (isAuth) {
+                viewModel.like(post.post)
+            } else {
+                authDialog(cbLike.context, navController, R.string.error_like_post).show()
+            }
         }
 
         ivMore.setOnClickListener {

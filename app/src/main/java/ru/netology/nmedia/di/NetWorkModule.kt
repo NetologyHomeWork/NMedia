@@ -15,6 +15,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 import ru.netology.nmedia.BuildConfig
+import ru.netology.nmedia.data.auth.AppAuth
+import ru.netology.nmedia.data.auth.AuthService
 import ru.netology.nmedia.data.network.PostService
 import java.util.concurrent.TimeUnit
 
@@ -42,10 +44,23 @@ val networkModule = module {
             .build()
     }
 
+    single<Interceptor>(named("auth")) {
+        Interceptor { chain ->
+            val request = AppAuth.getInstance().state.value?.token?.let { token ->
+                chain.request()
+                    .newBuilder()
+                    .addHeader("Authorization", token)
+                    .build()
+            } ?: chain.request()
+            chain.proceed(request)
+        }
+    }
+
     single {
         provideOkHttpClient(
             logger = get(named("logger")),
-            chucker = get(named("chucker"))
+            chucker = get(named("chucker")),
+            auth = get(named("auth"))
         )
     }
 
@@ -57,16 +72,27 @@ val networkModule = module {
             .build()
             .create()
     }
+
+    single<AuthService> {
+        Retrofit.Builder()
+            .addConverterFactory(get(named("converterFactory")))
+            .client(get())
+            .baseUrl(BuildConfig.BASE_URL)
+            .build()
+            .create()
+    }
 }
 
 private fun provideOkHttpClient(
     logger: Interceptor,
-    chucker: Interceptor
+    chucker: Interceptor,
+    auth: Interceptor
 ): OkHttpClient {
     val okHttpBuilder = OkHttpClient.Builder()
         .connectTimeout(30L, TimeUnit.SECONDS)
         .readTimeout(30L, TimeUnit.SECONDS)
         .writeTimeout(30L, TimeUnit.SECONDS)
+        .addInterceptor(auth)
 
     if (BuildConfig.IS_LOGS_ENABLED) {
         okHttpBuilder.addInterceptor(logger)

@@ -9,6 +9,7 @@ import ru.netology.nmedia.databinding.PostItemBinding
 import ru.netology.nmedia.domain.model.PostUIModel
 
 class MainAdapter(
+    private val isAuth: Boolean,
     private val listener: AdapterListener
 ) : ListAdapter<PostUIModel, MainAdapter.MainViewHolder>(PostItemDiffUtil()) {
 
@@ -17,7 +18,7 @@ class MainAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(post: PostUIModel) {
-            bindPostItemLayout(binding, post, listener)
+            bindPostItemLayout(binding, post, listener, isAuth)
         }
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {

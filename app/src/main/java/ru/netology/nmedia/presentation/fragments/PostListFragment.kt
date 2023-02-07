@@ -7,12 +7,17 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.netology.nmedia.R
+import ru.netology.nmedia.data.utils.authDialog
+import ru.netology.nmedia.data.utils.observeStateFlow
 import ru.netology.nmedia.databinding.FragmentPostListBinding
 import ru.netology.nmedia.domain.model.FeedModelState
 import ru.netology.nmedia.domain.model.PostUIModel
+import ru.netology.nmedia.presentation.activity.MainActivity
 import ru.netology.nmedia.presentation.rvadapter.AdapterListener
 import ru.netology.nmedia.presentation.rvadapter.MainAdapter
 import ru.netology.nmedia.presentation.viewmodel.MainViewModel
@@ -28,8 +33,12 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentPostListBinding.bind(view)
 
-        setupRecyclerView()
-        setupListeners()
+        val reqActivity = requireNotNull(activity as? MainActivity) {
+            "Illegal type activity: ${activity?.javaClass?.simpleName}"
+        }
+
+        setupRecyclerView(reqActivity)
+        setupListeners(reqActivity)
         swipeRefresh()
         observeFlow()
     }
@@ -39,12 +48,19 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
         _binding = null
     }
 
-    private fun setupRecyclerView() {
+    private fun setupRecyclerView(reqActivity: MainActivity) {
+
         val rvPostItem = binding.rvPostList
         val adapter = MainAdapter(
+            reqActivity.isAuth,
             object : AdapterListener {
+
                 override fun onClickLike(post: PostUIModel) {
-                    mainViewModel.like(post.post)
+                    if (reqActivity.isAuth) {
+                        mainViewModel.like(post.post)
+                    } else {
+                        authDialog(requireContext(), findNavController(), R.string.error_like_post).show()
+                    }
                 }
 
                 override fun onClickShare(post: PostUIModel) {
@@ -80,6 +96,11 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
                     mainViewModel.retrySavePost(post.post)
                 }
 
+                override fun onPhotoClick(post: PostUIModel) {
+                    val direction = PostListFragmentDirections
+                        .actionPostListFragmentToPhotoFragment(checkNotNull(post.post.attachment).url)
+                    findNavController().navigate(direction)
+                }
             }
         )
         rvPostItem.adapter = adapter
@@ -87,7 +108,7 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
     }
 
     private fun observePosts(adapter: MainAdapter) {
-        mainViewModel.data.observe(viewLifecycleOwner) { state ->
+        mainViewModel.data.observeStateFlow(viewLifecycleOwner) { state ->
             adapter.submitList(state.posts)
             binding.tvEmpty.isVisible = state.empty
         }
@@ -107,11 +128,16 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
         }
     }
 
-    private fun setupListeners() {
+    private fun setupListeners(reqActivity: MainActivity) {
         binding.buttonAdd.setOnClickListener {
-            findNavController().navigate(
-                PostListFragmentDirections.actionPostListFragmentToPostEditFragment(null)
-            )
+            if (reqActivity.isAuth) {
+                findNavController().navigate(
+                    PostListFragmentDirections.actionPostListFragmentToPostEditFragment(null)
+                )
+            } else {
+                authDialog(requireContext(), findNavController(), R.string.error_add_post).show()
+            }
+
         }
 
         binding.btnRetry.setOnClickListener {
@@ -121,6 +147,23 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
         binding.btnNewPosts.setOnClickListener {
             mainViewModel.loadNew()
             it.isVisible = false
+        }
+
+        binding.rvPostList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                binding.btnScrollDown.isVisible = dy > 0
+                if ((binding.rvPostList.layoutManager as LinearLayoutManager)
+                        .findLastCompletelyVisibleItemPosition() == (binding.rvPostList.layoutManager as LinearLayoutManager).itemCount - 1
+                ) {
+                    binding.btnScrollDown.isVisible = false
+                }
+            }
+        })
+
+        binding.btnScrollDown.setOnClickListener {
+            binding.rvPostList.smoothScrollToPosition(checkNotNull(binding.rvPostList.adapter).itemCount)
         }
     }
 
@@ -143,11 +186,13 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
                     MainViewModel.Command.Scroll -> {
                         binding.rvPostList.smoothScrollToPosition(0)
                     }
+                    else -> { /* no-op */
+                    }
                 }
             }
         }
 
-        mainViewModel.newerCount.observe(viewLifecycleOwner) { count ->
+        mainViewModel.newerCount.observeStateFlow(viewLifecycleOwner) { count ->
             binding.btnNewPosts.isVisible = count > 0
         }
     }

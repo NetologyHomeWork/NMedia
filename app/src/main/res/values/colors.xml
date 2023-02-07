@@ -10,7 +10,11 @@
     <color name="default_text_color">#FF808080</color>
     <color name="default_post_editor_background">#FFFFFFFF</color>
     <color name="default_message_editor_background">#FFFFFFFF</color>
+    <color name="color_overlay">#80FFFFFF</color>
     <color name="gray">#FF808080</color>
     <color name="like_color">#FFBA0C0C</color>
+    <color name="color_error">#FF3B30</color>
     <color name="cursor_color">#FF549EF7</color>
+    <color name="dark_blue">#160047</color>
+    <color name="bg_bottom_sheet">#E6E5E5</color>
 </resources>

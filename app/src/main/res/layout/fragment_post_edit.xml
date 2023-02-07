@@ -4,36 +4,114 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.fragments.PostEditFragment" >
+    tools:context=".presentation.fragments.PostEditFragment">
 
-
-    <EditText
-        android:id="@+id/et_edit_post"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/edit_text_background"
-        android:gravity="top"
-        android:imeOptions="actionDone"
-        android:hint="@string/write_something"
-        android:inputType="textAutoCorrect|textMultiLine"
-        android:padding="@dimen/card_padding"
-        android:textCursorDrawable="@drawable/et_cursor"
-        android:textSize="@dimen/editor_post_text_size"
-        android:importantForAutofill="no" />
+        android:layout_height="wrap_content" >
 
-    <com.google.android.material.bottomappbar.BottomAppBar
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/et_edit_post"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/edit_text_background"
+            android:gravity="top"
+            tools:text="@tools:sample/lorem[40]"
+            android:hint="@string/write_something"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="no"
+            android:inputType="textAutoCorrect|textMultiLine"
+            android:padding="@dimen/card_padding"
+            android:textCursorDrawable="@drawable/et_cursor"
+            android:textSize="@dimen/editor_post_text_size" />
+
+        <!--<com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottomAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            style="@style/Widget.MaterialComponents.BottomAppBar.Colored" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/button_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/save"
+            app:srcCompat="@drawable/ic_done_24"
+            app:layout_anchor="@id/bottomAppBar" />-->
+
+        <FrameLayout
+            android:id="@+id/photo_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            tools:visibility="visible" >
+
+            <ImageView
+                android:id="@+id/iv_photo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                tools:src="@tools:sample/avatars[15]" />
+
+            <ImageButton
+                android:id="@+id/iv_delete_photo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:padding="12dp"
+                android:background="@android:color/transparent"
+                android:backgroundTint="@android:color/transparent"
+                android:src="@drawable/shape_oval_button_bg"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+        </FrameLayout>
+    </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
         android:id="@+id/bottomAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        style="@style/Widget.MaterialComponents.BottomAppBar.Colored" />
+        android:background="@color/purple_700"
+        android:orientation="horizontal">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/button_save"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/save"
-        app:srcCompat="@drawable/ic_done_24"
-        app:layout_anchor="@id/bottomAppBar" />
+        <ImageView
+            android:id="@+id/pick_file"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:padding="16dp"
+            app:srcCompat="@drawable/ic_attach_file" />
 
+        <ImageView
+            android:id="@+id/pick_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:padding="16dp"
+            android:contentDescription="@string/picture_attachment"
+            app:srcCompat="@drawable/ic_photo" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:background="@color/color_overlay" >
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+    </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

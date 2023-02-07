@@ -5,10 +5,9 @@ import android.net.Uri
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
 import ru.netology.nmedia.R
 import ru.netology.nmedia.data.AppException
@@ -19,10 +18,7 @@ import ru.netology.nmedia.data.network.PostService
 import ru.netology.nmedia.data.utils.ResourceManager
 import ru.netology.nmedia.data.utils.parsingUrlLink
 import ru.netology.nmedia.data.utils.wrapException
-import ru.netology.nmedia.domain.model.Post
-import ru.netology.nmedia.domain.model.PostUIModel
-import ru.netology.nmedia.domain.model.toPostEntity
-import ru.netology.nmedia.domain.model.toPostEntityList
+import ru.netology.nmedia.domain.model.*
 
 class PostRepositoryImpl(
     private val postService: PostService,
@@ -46,10 +42,10 @@ class PostRepositoryImpl(
         postDao.updateVisibility()
     }
 
-    override fun getNewerCount(postId: Long): Flow<Int> = flow {
+    override fun getNewerCount(postId: Long): Flow<Int> = callbackFlow {
         while (true) {
             try {
-                delay(15_000L)
+                delay(3_000L)
                 val response = postService.getNewer(postId)
                 if (response.isSuccessful.not()) {
                     throw AppException.ApiError(response.code(), response.message())
@@ -59,7 +55,7 @@ class PostRepositoryImpl(
                     response.message()
                 )
                 postDao.insert(body.toPostEntityList(true))
-                emit(body.size)
+                trySend(body.size)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -77,14 +73,18 @@ class PostRepositoryImpl(
         }
     }
 
-    override suspend fun savePostAsync(post: Post) {
+    override suspend fun savePostAsync(post: Post, model: PhotoModel?) {
         try {
-            val response = postService.savePost(post)
+            val file = model?.let { uploadFile(it) }
+            val response = file?.let {
+                postService.savePost(post.copy(attachment = Attachment(url = it.id, type = AttachmentType.IMAGE, description = "")))
+            } ?: postService.savePost(post)
             if (response.isSuccessful.not()) {
                 throw AppException.ApiError(response.code(), response.message())
             }
             postDao.insert(post.toPostEntity())
         } catch (e: Exception) {
+            e.printStackTrace()
             postDao.insert(post.toPostEntity().copy(isError = true))
             when (e) {
                 is AppException.ApiError -> throw e
@@ -97,6 +97,21 @@ class PostRepositoryImpl(
                 }
             }
         }
+    }
+
+    private suspend fun uploadFile(model: PhotoModel): Media = wrapException(resourceManager) {
+        val part = MultipartBody.Part.createFormData(
+            name = "file",
+            filename = model.file?.name,
+            body = model.file!!.asRequestBody()
+        )
+
+        val response = postService.uploadPhoto(part)
+        if (response.isSuccessful.not() || response.body() == null) throw AppException.ApiError(
+            response.code(),
+            response.message()
+        )
+        return response.body() ?: throw AppException.ApiError(response.code(), response.message())
     }
 
     override suspend fun removeItemAsync(id: Long) = wrapException(resourceManager) {

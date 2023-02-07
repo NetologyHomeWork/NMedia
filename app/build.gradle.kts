@@ -40,7 +40,8 @@ android {
     @Suppress("UnstableApiUsage")
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             manifestPlaceholders["usesCleartextTraffic"] = false
             buildConfigField("String", "BASE_URL", baseUrl)
@@ -48,6 +49,8 @@ android {
             buildConfigField("boolean", isLogEnabled, "false")
         }
         debug {
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             manifestPlaceholders["usesCleartextTraffic"] = true
             buildConfigField("String", "BASE_URL", baseUrl)
             buildConfigField("boolean", canUseChucker, "true")
@@ -104,8 +107,11 @@ dependencies {
     debugImplementation("com.willowtreeapps.hyperion:hyperion-recorder:0.9.34")
     debugImplementation("com.willowtreeapps.hyperion:hyperion-shared-preferences:0.9.34")
 
+    // Image Picker
+    implementation("com.github.dhaval2404:imagepicker:2.1")
+
     implementation("androidx.activity:activity-ktx:1.6.1")
-    implementation("androidx.fragment:fragment-ktx:1.5.4")
+    implementation("androidx.fragment:fragment-ktx:1.5.5")
     implementation("com.google.code.gson:gson:2.9.1")
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
