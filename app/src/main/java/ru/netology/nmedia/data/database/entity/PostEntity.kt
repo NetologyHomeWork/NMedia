@@ -14,6 +14,7 @@ data class PostEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
     val author: String,
+    @ColumnInfo(name = "author_id") val authorId: Long,
     val content: String,
     val published: String,
     @ColumnInfo(name = "is_like") val isLike: Boolean,
@@ -27,6 +28,7 @@ data class PostEntity(
 fun PostEntity.toPost(): Post = Post(
     id = this.id,
     author = this.author,
+    authorId = authorId,
     published = this.published,
     content = this.content,
     isLike = this.isLike,

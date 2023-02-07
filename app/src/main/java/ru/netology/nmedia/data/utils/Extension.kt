@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.*
 
 fun String.formatDate(): String {
     val formatter = SimpleDateFormat.getDateTimeInstance()
@@ -28,6 +28,14 @@ fun<T> commandSharedFlow() = MutableSharedFlow<T>(
 fun<T> Flow<T>.observeSharedFlow(lifecycleOwner: LifecycleOwner, body: (T) -> Unit) {
     lifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
         collectLatest {
+            body(it)
+        }
+    }
+}
+
+fun<T> Flow<T>.observeStateFlow(lifecycleOwner: LifecycleOwner, body: (T) -> Unit) {
+    lifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
+        collect {
             body(it)
         }
     }

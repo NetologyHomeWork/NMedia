@@ -17,6 +17,7 @@ import ru.netology.nmedia.data.utils.observeSharedFlow
 import ru.netology.nmedia.databinding.FragmentPostDetailBinding
 import ru.netology.nmedia.domain.model.Post
 import ru.netology.nmedia.domain.model.PostUIModel
+import ru.netology.nmedia.presentation.activity.MainActivity
 import ru.netology.nmedia.presentation.viewmodel.PostDetailViewModel
 import ru.netology.nmedia.presentation.viewmodel.PostDetailViewModel.Command
 
@@ -43,6 +44,9 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
     }
 
     private fun bindLayout() {
+        val reqActivity = requireNotNull(activity as? MainActivity) {
+            "Illegal type activity: ${activity?.javaClass?.simpleName}"
+        }
         viewModel.currentPost.observe(viewLifecycleOwner) { post ->
             binding.postDetail.apply {
                 bindPostItemLayout(
@@ -50,10 +54,12 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
                     PostUIModel(
                         post = post,
                         isError = false,
-                        isNew = false
+                        isNew = false,
+                        ownedByMe = reqActivity.isAuth
                     ),
                     viewModel,
-                    findNavController()
+                    findNavController(),
+                    reqActivity.isAuth
                 )
             }
             setupListeners(post)

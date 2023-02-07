@@ -47,7 +47,7 @@ class PostDetailViewModel(
 
     fun share(post: Post): Intent = repository.share(post)
 
-    fun loadPost() {
+    private fun loadPost() {
         viewModelScope.launch {
             repository.getPostById(postId).run {
                 _currentPost.value = this
