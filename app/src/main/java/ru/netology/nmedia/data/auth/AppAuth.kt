@@ -2,10 +2,19 @@ package ru.netology.nmedia.data.auth
 
 import android.content.Context
 import androidx.core.content.edit
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import org.koin.java.KoinJavaComponent.inject
+import ru.netology.nmedia.domain.model.PushToken
 
 class AppAuth private constructor(context: Context) {
+
+    private val authService: AuthService by inject(AuthService::class.java)
 
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
     private val _state: MutableStateFlow<AuthState?>
@@ -20,6 +29,7 @@ class AppAuth private constructor(context: Context) {
         } else {
             MutableStateFlow(AuthState(id = id, token = token))
         }
+        sendPushToken()
     }
 
     val state = _state.asStateFlow()
@@ -31,12 +41,26 @@ class AppAuth private constructor(context: Context) {
             putString(TOKEN_KEY, token)
         }
         _state.tryEmit(AuthState(id = id, token = token))
+        sendPushToken()
+    }
+
+    fun sendPushToken(token: String? = null) {
+        CoroutineScope(Dispatchers.Default).launch {
+            try {
+                authService.sendPushToken(
+                    PushToken(token ?: FirebaseMessaging.getInstance().token.await())
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     @Synchronized
     fun removeAuth() {
         prefs.edit { clear() }
         _state.tryEmit(null)
+        sendPushToken()
     }
 
     companion object {

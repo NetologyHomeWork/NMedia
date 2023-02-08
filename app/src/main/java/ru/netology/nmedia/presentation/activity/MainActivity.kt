@@ -1,11 +1,14 @@
 package ru.netology.nmedia.presentation.activity
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
@@ -80,10 +83,18 @@ class MainActivity : AppCompatActivity() {
 
     val isAuth get() = authViewModel.authorized
 
+    private val permissionPostNotificationLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+        ::requestPermission
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater).also { setContentView(it.root) }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionPostNotificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
 
         checkGoogleApiAvailability()
 
@@ -103,6 +114,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         return navController!!.navigateUp()
+    }
+
+    private fun requestPermission(granted: Boolean) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (granted) return
+            shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
+       }
     }
 
     private fun checkGoogleApiAvailability() {

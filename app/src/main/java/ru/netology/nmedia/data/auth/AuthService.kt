@@ -4,6 +4,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.*
+import ru.netology.nmedia.domain.model.PushToken
 
 interface AuthService {
 
@@ -27,4 +28,9 @@ interface AuthService {
         @Part("name") name: RequestBody,
         @Part media: MultipartBody.Part,
     ): Response<AuthState>
+
+    @POST("api/users/push-tokens")
+    suspend fun sendPushToken(
+        @Body token: PushToken
+    ): Response<Unit>
 }
