@@ -1,23 +1,27 @@
 package ru.netology.nmedia.services
 
+import android.Manifest
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import ru.netology.nmedia.R
+import ru.netology.nmedia.data.auth.AppAuth
+import ru.netology.nmedia.domain.model.PushMessage
 import kotlin.random.Random
 
 class FCMService : FirebaseMessagingService() {
 
-    private val action = "action"
-    private val content = "content"
     private val gson = Gson()
 
     override fun onCreate() {
@@ -35,26 +39,35 @@ class FCMService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-        message.data[action]?.let {
+
+        message.data[ACTION]?.let {
                 try {
                     when(Action.valueOf(it)) {
                     Action.LIKE -> {
                         handleLike(
-                            gson.fromJson(message.data[content], Like::class.java))
+                            gson.fromJson(message.data[CONTENT], Like::class.java))
                     }
                         Action.POST -> {
                             handlePost(
-                                gson.fromJson(message.data[content], NewPostNotification::class.java))
+                                gson.fromJson(message.data[CONTENT], NewPostNotification::class.java))
                         }
                 }
             } catch (e: RuntimeException) {
                 handleUpdate()
             }
         }
+        val content = gson.fromJson(message.data[CONTENT], PushMessage::class.java)
+        val recipientId = content.recipientId
+        val userId = AppAuth.getInstance().state.value?.id
+        when (recipientId) {
+            userId, null -> handlePushMessage(content = content)
+            else -> AppAuth.getInstance().sendPushToken()
+        }
     }
 
     override fun onNewToken(token: String) {
         Log.e(NEW_TOKEN_TAG, token)
+        AppAuth.getInstance().sendPushToken(token)
     }
 
     private fun handleLike(content: Like) {
@@ -71,8 +84,7 @@ class FCMService : FirebaseMessagingService() {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 
-        NotificationManagerCompat.from(this)
-            .notify(Random.nextInt(100_000), notification)
+        sendNotificationWithCheckPermission(notification)
     }
 
     private fun handlePost(content: NewPostNotification) {
@@ -88,8 +100,7 @@ class FCMService : FirebaseMessagingService() {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 
-        NotificationManagerCompat.from(this)
-            .notify(Random.nextInt(100_000), notification)
+        sendNotificationWithCheckPermission(notification)
     }
 
     private fun handleUpdate() {
@@ -99,12 +110,37 @@ class FCMService : FirebaseMessagingService() {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 
-        NotificationManagerCompat.from(this)
-            .notify(Random.nextInt(100_000), notification)
+        sendNotificationWithCheckPermission(notification)
+    }
+
+    private fun handlePushMessage(content: PushMessage) {
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(
+                getString(R.string.notification, content.recipientId, content.content)
+            )
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+        sendNotificationWithCheckPermission(notification)
+    }
+
+    private fun sendNotificationWithCheckPermission(notification: Notification) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        } else {
+            NotificationManagerCompat.from(this)
+                .notify(Random.nextInt(100_000), notification)
+        }
     }
 
     private companion object {
         private const val NEW_TOKEN_TAG = "NEW_TOKEN_TAG"
         private const val CHANNEL_ID = "777"
+        private const val ACTION = "action"
+        private const val CONTENT = "content"
     }
 }
