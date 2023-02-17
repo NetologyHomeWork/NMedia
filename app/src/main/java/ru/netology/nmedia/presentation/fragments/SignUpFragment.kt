@@ -10,12 +10,13 @@ import androidx.core.net.toFile
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.dhaval2404.imagepicker.constant.ImageProvider
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.data.utils.observeSharedFlow
 import ru.netology.nmedia.data.utils.observeStateFlow
@@ -23,13 +24,14 @@ import ru.netology.nmedia.databinding.BottomSheetAddAvatarBinding
 import ru.netology.nmedia.databinding.FragmentSignUpBinding
 import ru.netology.nmedia.presentation.viewmodel.SignUpViewModel
 
+@AndroidEntryPoint
 class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
 
     private var _binding: FragmentSignUpBinding? = null
     private val binding: FragmentSignUpBinding
         get() = requireNotNull(_binding) { "FragmentSignUpBinding is null" }
 
-    private val viewModel by viewModel<SignUpViewModel>()
+    private val viewModel by viewModels<SignUpViewModel>()
 
     private val photoLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {

@@ -1,21 +1,21 @@
 package ru.netology.nmedia.di
 
 import android.app.Application
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.core.context.startKoin
-import org.koin.core.logger.Level
-import ru.netology.nmedia.data.auth.AppAuth
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
+import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
-class MainApp : Application() {
+@HiltAndroidApp
+class MainApp : Application(), Configuration.Provider {
 
-    override fun onCreate() {
-        super.onCreate()
-        startKoin {
-            androidContext(this@MainApp)
-            modules(componentModule, networkModule)
-            androidLogger(level = Level.ERROR)
-        }
-        AppAuth.init(this)
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+
+    override fun getWorkManagerConfiguration(): Configuration {
+        return Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .setMinimumLoggingLevel(android.util.Log.ERROR)
+            .build()
     }
 }

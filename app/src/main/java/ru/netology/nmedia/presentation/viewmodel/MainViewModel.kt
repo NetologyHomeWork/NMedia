@@ -3,6 +3,7 @@ package ru.netology.nmedia.presentation.viewmodel
 import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
@@ -16,10 +17,13 @@ import ru.netology.nmedia.domain.model.FeedModelState
 import ru.netology.nmedia.domain.model.PhotoModel
 import ru.netology.nmedia.domain.model.Post
 import java.io.File
+import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class MainViewModel(
-    private val repository: PostRepository
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val repository: PostRepository,
+    appAuth: AppAuth
 ) : ViewModel() {
 
     private val _commands = MutableSharedFlow<Command>(
@@ -35,7 +39,7 @@ class MainViewModel(
     private val _blockContent = MutableStateFlow(false)
     val blockContent = _blockContent.asStateFlow()
 
-    val data = AppAuth.getInstance().state
+    val data = appAuth.state
         .map { it?.id }
         .flatMapLatest { id ->
             repository.data

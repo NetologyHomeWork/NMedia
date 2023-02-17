@@ -5,6 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -12,9 +15,9 @@ import ru.netology.nmedia.data.repository.PostRepository
 import ru.netology.nmedia.data.utils.commandSharedFlow
 import ru.netology.nmedia.domain.model.Post
 
-class PostDetailViewModel(
+class PostDetailViewModel @AssistedInject constructor(
     private val repository: PostRepository,
-    private val postId: Long
+    @Assisted private val postId: Long
 ) : ViewModel() {
 
     private val _currentPost = MutableLiveData<Post>()
@@ -63,5 +66,10 @@ class PostDetailViewModel(
 
     sealed interface Command {
         class LaunchEditScreen(val content: String) : Command
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(@Assisted postId: Long): PostDetailViewModel
     }
 }

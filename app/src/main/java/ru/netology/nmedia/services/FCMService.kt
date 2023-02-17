@@ -8,21 +8,26 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Build
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.data.auth.AppAuth
 import ru.netology.nmedia.domain.model.PushMessage
+import javax.inject.Inject
 import kotlin.random.Random
 
+@AndroidEntryPoint
 class FCMService : FirebaseMessagingService() {
 
     private val gson = Gson()
+
+    @Inject
+    lateinit var appAuth: AppAuth
 
     override fun onCreate() {
         super.onCreate()
@@ -58,16 +63,15 @@ class FCMService : FirebaseMessagingService() {
         }
         val content = gson.fromJson(message.data[CONTENT], PushMessage::class.java)
         val recipientId = content.recipientId
-        val userId = AppAuth.getInstance().state.value?.id
+        val userId = appAuth.state.value?.id
         when (recipientId) {
             userId, null -> handlePushMessage(content = content)
-            else -> AppAuth.getInstance().sendPushToken()
+            else -> appAuth.sendPushToken()
         }
     }
 
     override fun onNewToken(token: String) {
-        Log.e(NEW_TOKEN_TAG, token)
-        AppAuth.getInstance().sendPushToken(token)
+        appAuth.sendPushToken(token)
     }
 
     private fun handleLike(content: Like) {
@@ -138,7 +142,6 @@ class FCMService : FirebaseMessagingService() {
     }
 
     private companion object {
-        private const val NEW_TOKEN_TAG = "NEW_TOKEN_TAG"
         private const val CHANNEL_ID = "777"
         private const val ACTION = "action"
         private const val CONTENT = "content"

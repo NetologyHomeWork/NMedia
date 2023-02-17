@@ -4,22 +4,24 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.data.utils.observeSharedFlow
 import ru.netology.nmedia.data.utils.observeStateFlow
 import ru.netology.nmedia.databinding.FragmentSignInBinding
 import ru.netology.nmedia.presentation.viewmodel.SignInViewModel
 
+@AndroidEntryPoint
 class SignInFragment : Fragment(R.layout.fragment_sign_in) {
 
     private var _binding: FragmentSignInBinding? = null
     private val binding: FragmentSignInBinding
         get() = requireNotNull(_binding) { "FragmentSignInBinding is null" }
 
-    private val viewModel by viewModel<SignInViewModel>()
+    private val viewModel by viewModels<SignInViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

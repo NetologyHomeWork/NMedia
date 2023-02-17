@@ -8,8 +8,11 @@ import ru.netology.nmedia.data.AppException
 import ru.netology.nmedia.data.utils.ResourceManager
 import ru.netology.nmedia.data.utils.wrapException
 import ru.netology.nmedia.domain.model.PhotoModel
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AuthRepositoryImpl(
+@Singleton
+class AuthRepositoryImpl @Inject constructor(
     private val authService: AuthService,
     private val resourceManager: ResourceManager
 ) : AuthRepository {

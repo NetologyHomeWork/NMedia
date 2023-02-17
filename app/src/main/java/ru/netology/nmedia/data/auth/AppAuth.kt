@@ -2,19 +2,22 @@ package ru.netology.nmedia.data.auth
 
 import android.content.Context
 import androidx.core.content.edit
-import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import androidx.work.*
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import org.koin.java.KoinJavaComponent.inject
-import ru.netology.nmedia.domain.model.PushToken
+import ru.netology.nmedia.worker.SendPushTokenWorker
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AppAuth private constructor(context: Context) {
-
-    private val authService: AuthService by inject(AuthService::class.java)
+@Singleton
+class AppAuth @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
 
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
     private val _state: MutableStateFlow<AuthState?>
@@ -29,7 +32,6 @@ class AppAuth private constructor(context: Context) {
         } else {
             MutableStateFlow(AuthState(id = id, token = token))
         }
-        sendPushToken()
     }
 
     val state = _state.asStateFlow()
@@ -45,15 +47,19 @@ class AppAuth private constructor(context: Context) {
     }
 
     fun sendPushToken(token: String? = null) {
-        CoroutineScope(Dispatchers.Default).launch {
-            try {
-                authService.sendPushToken(
-                    PushToken(token ?: FirebaseMessaging.getInstance().token.await())
+        val workManager = EntryPointAccessors
+            .fromApplication<AppAuthEntryPoint>(context).getWorkManager()
+
+        workManager.enqueueUniqueWork(
+            SendPushTokenWorker.WORKER_NAME,
+            ExistingWorkPolicy.REPLACE,
+            OneTimeWorkRequestBuilder<SendPushTokenWorker>()
+                .setInputData(workDataOf(SendPushTokenWorker.TOKEN_KEY to token))
+                .setConstraints(
+                    Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
                 )
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
+                .build()
+        )
     }
 
     @Synchronized
@@ -63,18 +69,13 @@ class AppAuth private constructor(context: Context) {
         sendPushToken()
     }
 
+    @[EntryPoint InstallIn(SingletonComponent::class)]
+    interface AppAuthEntryPoint {
+        fun getWorkManager(): WorkManager
+    }
+
     companion object {
         private const val TOKEN_KEY = "TOKEN_KEY"
         private const val ID_KEY = "ID_KEY"
-
-        private var INSTANCE: AppAuth? = null
-
-        fun init(context: Context) {
-            INSTANCE = AppAuth(context)
-        }
-
-        fun getInstance(): AppAuth = requireNotNull(INSTANCE) {
-            "init() must called before getInstance()"
-        }
     }
 }

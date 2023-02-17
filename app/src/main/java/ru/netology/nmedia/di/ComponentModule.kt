@@ -1,64 +1,27 @@
 package ru.netology.nmedia.di
 
-import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.dsl.module
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import ru.netology.nmedia.data.auth.AuthRepository
 import ru.netology.nmedia.data.auth.AuthRepositoryImpl
-import ru.netology.nmedia.data.database.db.PostDatabase
+import ru.netology.nmedia.data.database.repository.PostDaoImpl
+import ru.netology.nmedia.data.database.repository.PostDaoRepository
 import ru.netology.nmedia.data.repository.PostRepository
 import ru.netology.nmedia.data.repository.PostRepositoryImpl
-import ru.netology.nmedia.data.utils.ResourceManager
 import ru.netology.nmedia.presentation.viewmodel.*
+import javax.inject.Singleton
 
-val componentModule = module {
+@[Module InstallIn(SingletonComponent::class)]
+interface ComponentModule {
 
-    single<PostRepository> {
-        PostRepositoryImpl(
-            postService = get(),
-            postDao = get(),
-            resourceManager = get()
-        )
-    }
+    @[Binds Singleton]
+    fun bindsPostRepository(impl: PostRepositoryImpl): PostRepository
 
-    single<AuthRepository> {
-        AuthRepositoryImpl(
-            authService = get(),
-            resourceManager = get()
-        )
-    }
+    @[Binds Singleton]
+    fun bindsAuthRepository(impl: AuthRepositoryImpl): AuthRepository
 
-    single {
-        PostDatabase.getInstance(androidContext()).postDao()
-    }
-
-    single {
-        ResourceManager(context = androidContext())
-    }
-
-    viewModel {
-        MainViewModel(repository = get())
-    }
-
-    viewModel { params ->
-        PostDetailViewModel(
-            repository = get(),
-            postId = params.get()
-        )
-    }
-
-    viewModel {
-        AuthViewModel()
-    }
-
-    viewModel {
-        SignInViewModel(get())
-    }
-
-    viewModel {
-        SignUpViewModel(
-            authRepository = get(),
-            resourceManager = get()
-        )
-    }
+    @[Binds Singleton]
+    fun bindsPostDaoRepository(impl: PostDaoImpl): PostDaoRepository
 }

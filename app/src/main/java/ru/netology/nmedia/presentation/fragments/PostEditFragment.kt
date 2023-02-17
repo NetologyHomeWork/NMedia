@@ -11,14 +11,15 @@ import androidx.core.net.toFile
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.dhaval2404.imagepicker.constant.ImageProvider
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.netology.nmedia.R
 import ru.netology.nmedia.data.utils.hideKeyboard
 import ru.netology.nmedia.data.utils.observeSharedFlow
@@ -26,6 +27,7 @@ import ru.netology.nmedia.databinding.FragmentPostEditBinding
 import ru.netology.nmedia.domain.model.Post
 import ru.netology.nmedia.presentation.viewmodel.MainViewModel
 
+@AndroidEntryPoint
 class PostEditFragment : Fragment(R.layout.fragment_post_edit) {
 
     private var editPost = Post(
@@ -43,7 +45,7 @@ class PostEditFragment : Fragment(R.layout.fragment_post_edit) {
     private val binding: FragmentPostEditBinding
         get() = _binding ?: throw NullPointerException("FragmentPostEditBinding is null")
 
-    private val viewModel by viewModel<MainViewModel>(owner = ::requireParentFragment)
+    private val viewModel by activityViewModels<MainViewModel>()
 
     private val args by navArgs<PostEditFragmentArgs>()
     private val photoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
