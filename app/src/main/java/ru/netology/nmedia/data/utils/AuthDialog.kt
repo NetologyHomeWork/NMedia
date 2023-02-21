@@ -40,11 +40,11 @@ fun authDialog(
         .create()
 }
 
-fun logoutDialog(context: Context, @StringRes message: Int): Dialog {
+fun logoutDialog(context: Context, @StringRes message: Int, appAuth: AppAuth): Dialog {
     val listener = DialogInterface.OnClickListener { dialog, which ->
         when (which) {
             DialogInterface.BUTTON_POSITIVE -> {
-                AppAuth.getInstance().removeAuth()
+                appAuth.removeAuth()
                 dialog.dismiss()
             }
             DialogInterface.BUTTON_NEGATIVE -> {

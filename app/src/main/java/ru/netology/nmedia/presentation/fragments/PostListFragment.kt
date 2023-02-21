@@ -5,12 +5,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.data.utils.authDialog
 import ru.netology.nmedia.data.utils.observeStateFlow
@@ -22,12 +23,13 @@ import ru.netology.nmedia.presentation.rvadapter.AdapterListener
 import ru.netology.nmedia.presentation.rvadapter.MainAdapter
 import ru.netology.nmedia.presentation.viewmodel.MainViewModel
 
+@AndroidEntryPoint
 class PostListFragment : Fragment(R.layout.fragment_post_list) {
     private var _binding: FragmentPostListBinding? = null
     private val binding: FragmentPostListBinding
         get() = _binding ?: throw RuntimeException("FragmentPostListBinding is null")
 
-    private val mainViewModel by viewModel<MainViewModel>(owner = ::requireParentFragment)
+    private val mainViewModel by activityViewModels<MainViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

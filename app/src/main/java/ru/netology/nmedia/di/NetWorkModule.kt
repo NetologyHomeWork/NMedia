@@ -1,15 +1,18 @@
 package ru.netology.nmedia.di
 
+import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.qualifier.named
-import org.koin.dsl.module
 import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -19,34 +22,47 @@ import ru.netology.nmedia.data.auth.AppAuth
 import ru.netology.nmedia.data.auth.AuthService
 import ru.netology.nmedia.data.network.PostService
 import java.util.concurrent.TimeUnit
+import javax.inject.Qualifier
+import javax.inject.Singleton
 
+@[Module InstallIn(SingletonComponent::class)]
+class NetWorkModule {
 
-val networkModule = module {
-
-    single<Moshi> {
-        Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
+    @[Provides Singleton]
+    fun provideMoshi(): Moshi {
+        return Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
     }
 
-    single<Converter.Factory>(named("converterFactory")) {
-        MoshiConverterFactory.create(get())
+    @[Provides Singleton MoshiFactory]
+    fun provideMoshiConverterFactory(
+        moshi: Moshi
+    ): Converter.Factory {
+        return MoshiConverterFactory.create(moshi)
     }
 
-    single<Interceptor>(named("logger")) {
-        HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    @[Provides Singleton Logger]
+    fun provideLoggingInterceptor(): Interceptor {
+        return HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
     }
 
-    single<Interceptor>(named("chucker")) {
-        ChuckerInterceptor.Builder(androidContext())
-            .collector(ChuckerCollector(androidContext()))
+    @[Provides Singleton Chucker]
+    fun provideChucherInterceptor(
+        @ApplicationContext context: Context
+    ): Interceptor {
+        return ChuckerInterceptor.Builder(context)
+            .collector(ChuckerCollector(context))
             .maxContentLength(250_000L)
             .redactHeaders(emptySet())
             .alwaysReadResponseBody(false)
             .build()
     }
 
-    single<Interceptor>(named("auth")) {
-        Interceptor { chain ->
-            val request = AppAuth.getInstance().state.value?.token?.let { token ->
+    @[Provides Singleton AuthInterceptor]
+    fun provideAuthInterceptor(
+        appAuth: AppAuth
+    ): Interceptor {
+        return Interceptor { chain ->
+            val request = appAuth.state.value?.token?.let { token ->
                 chain.request()
                     .newBuilder()
                     .addHeader("Authorization", token)
@@ -56,48 +72,57 @@ val networkModule = module {
         }
     }
 
-    single {
-        provideOkHttpClient(
-            logger = get(named("logger")),
-            chucker = get(named("chucker")),
-            auth = get(named("auth"))
-        )
+    @[Provides Singleton]
+    fun provideOkHttpClient(
+        @Logger logger: Interceptor,
+        @Chucker chucker: Interceptor,
+        @AuthInterceptor auth: Interceptor
+    ): OkHttpClient {
+        val okHttpBuilder = OkHttpClient.Builder()
+            .connectTimeout(30L, TimeUnit.SECONDS)
+            .readTimeout(30L, TimeUnit.SECONDS)
+            .writeTimeout(30L, TimeUnit.SECONDS)
+            .addInterceptor(auth)
+
+        if (BuildConfig.IS_LOGS_ENABLED) {
+            okHttpBuilder.addInterceptor(logger)
+            okHttpBuilder.addInterceptor(chucker)
+        }
+
+        return okHttpBuilder.build()
     }
 
-    single<PostService> {
-        Retrofit.Builder()
-            .addConverterFactory(get(named("converterFactory")))
-            .client(get())
+    @[Provides Singleton]
+    fun provideRetrofit(
+        @MoshiFactory factory: Converter.Factory,
+        client: OkHttpClient
+    ): Retrofit {
+        return Retrofit.Builder()
+            .addConverterFactory(factory)
+            .client(client)
             .baseUrl(BuildConfig.BASE_URL)
             .build()
-            .create()
     }
 
-    single<AuthService> {
-        Retrofit.Builder()
-            .addConverterFactory(get(named("converterFactory")))
-            .client(get())
-            .baseUrl(BuildConfig.BASE_URL)
-            .build()
-            .create()
-    }
+    @[Provides Singleton]
+    fun providePostService(
+        retrofit: Retrofit
+    ): PostService = retrofit.create()
+
+    @[Provides Singleton]
+    fun provideAuthService(
+        retrofit: Retrofit
+    ): AuthService = retrofit.create()
 }
 
-private fun provideOkHttpClient(
-    logger: Interceptor,
-    chucker: Interceptor,
-    auth: Interceptor
-): OkHttpClient {
-    val okHttpBuilder = OkHttpClient.Builder()
-        .connectTimeout(30L, TimeUnit.SECONDS)
-        .readTimeout(30L, TimeUnit.SECONDS)
-        .writeTimeout(30L, TimeUnit.SECONDS)
-        .addInterceptor(auth)
+@[Qualifier Retention(AnnotationRetention.RUNTIME)]
+annotation class MoshiFactory
 
-    if (BuildConfig.IS_LOGS_ENABLED) {
-        okHttpBuilder.addInterceptor(logger)
-        okHttpBuilder.addInterceptor(chucker)
-    }
+@[Qualifier Retention(AnnotationRetention.RUNTIME)]
+annotation class Logger
 
-    return okHttpBuilder.build()
-}
+@[Qualifier Retention(AnnotationRetention.RUNTIME)]
+annotation class Chucker
+
+@[Qualifier Retention(AnnotationRetention.RUNTIME)]
+annotation class AuthInterceptor

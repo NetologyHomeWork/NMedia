@@ -2,6 +2,7 @@ package ru.netology.nmedia.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -11,12 +12,13 @@ import ru.netology.nmedia.data.AppException
 import ru.netology.nmedia.data.auth.AppAuth
 import ru.netology.nmedia.data.auth.AuthRepository
 import ru.netology.nmedia.data.utils.commandSharedFlow
+import javax.inject.Inject
 
-class SignInViewModel(
-    private val authRepository: AuthRepository
+@HiltViewModel
+class SignInViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
+    private val appAuth: AppAuth
 ) : ViewModel() {
-
-    private val appAuth = AppAuth.getInstance()
 
     private val _commands = commandSharedFlow<Commands>()
     val commands = _commands.asSharedFlow()

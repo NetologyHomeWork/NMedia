@@ -19,8 +19,11 @@ import ru.netology.nmedia.data.utils.ResourceManager
 import ru.netology.nmedia.data.utils.parsingUrlLink
 import ru.netology.nmedia.data.utils.wrapException
 import ru.netology.nmedia.domain.model.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class PostRepositoryImpl(
+@Singleton
+class PostRepositoryImpl @Inject constructor(
     private val postService: PostService,
     private val postDao: PostDao,
     private val resourceManager: ResourceManager
@@ -45,7 +48,7 @@ class PostRepositoryImpl(
     override fun getNewerCount(postId: Long): Flow<Int> = callbackFlow {
         while (true) {
             try {
-                delay(3_000L)
+                delay(15_000L)
                 val response = postService.getNewer(postId)
                 if (response.isSuccessful.not()) {
                     throw AppException.ApiError(response.code(), response.message())

@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
@@ -22,23 +23,31 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
+import ru.netology.nmedia.data.auth.AppAuth
 import ru.netology.nmedia.data.utils.logoutDialog
 import ru.netology.nmedia.data.utils.observeStateFlow
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.presentation.fragments.PhotoFragment
 import ru.netology.nmedia.presentation.viewmodel.AuthViewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private var _binding: ActivityMainBinding? = null
     private val binding: ActivityMainBinding
         get() = _binding ?: throw NullPointerException("ActivityMainBinding is null")
+    private val authViewModel by viewModels<AuthViewModel>()
 
-    private val authViewModel by viewModel<AuthViewModel>()
+    @Inject
+    lateinit var appAuth: AppAuth
 
-    var menuProvider: MenuProvider? = null
+    @Inject
+    lateinit var googleApi: GoogleApiAvailability
+
+    private var menuProvider: MenuProvider? = null
 
     private val destinationListener =
         NavController.OnDestinationChangedListener { _, destination, _ ->
@@ -124,7 +133,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkGoogleApiAvailability() {
-        with(GoogleApiAvailability.getInstance()) {
+        with(googleApi) {
             val code = isGooglePlayServicesAvailable(this@MainActivity)
             if (code == ConnectionResult.SUCCESS) return@with
             if (isUserResolvableError(code)) {
@@ -176,7 +185,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                     return when (menuItem.itemId) {
                         R.id.logout -> {
-                            logoutDialog(this@MainActivity, R.string.confirm_logout).show()
+                            logoutDialog(this@MainActivity, R.string.confirm_logout, appAuth).show()
                             true
                         }
                         R.id.sigh_in -> {

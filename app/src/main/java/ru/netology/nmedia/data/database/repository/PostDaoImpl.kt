@@ -1,15 +1,15 @@
 package ru.netology.nmedia.data.database.repository
 
-import android.app.Application
 import kotlinx.coroutines.flow.Flow
-import ru.netology.nmedia.data.database.db.PostDatabase
+import ru.netology.nmedia.data.database.dao.PostDao
 import ru.netology.nmedia.data.database.entity.PostEntity
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class PostDaoImpl(
-    application: Application
+@Singleton
+class PostDaoImpl @Inject constructor(
+    private val postDao: PostDao
 ) : PostDaoRepository {
-
-    private val postDao = PostDatabase.getInstance(application).postDao()
 
     override val allPostEntity: Flow<List<PostEntity>>
         get() = postDao.getAll()

@@ -8,10 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 import ru.netology.nmedia.R
+import ru.netology.nmedia.data.utils.assistedViewModel
 import ru.netology.nmedia.data.utils.bindPostItemLayout
 import ru.netology.nmedia.data.utils.observeSharedFlow
 import ru.netology.nmedia.databinding.FragmentPostDetailBinding
@@ -20,7 +20,9 @@ import ru.netology.nmedia.domain.model.PostUIModel
 import ru.netology.nmedia.presentation.activity.MainActivity
 import ru.netology.nmedia.presentation.viewmodel.PostDetailViewModel
 import ru.netology.nmedia.presentation.viewmodel.PostDetailViewModel.Command
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
 
     private var _binding: FragmentPostDetailBinding? = null
@@ -29,7 +31,10 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
 
     private val args by navArgs<PostDetailFragmentArgs>()
 
-    private val viewModel by viewModel<PostDetailViewModel> { parametersOf(args.postId) }
+    @Inject
+    lateinit var factory: PostDetailViewModel.Factory
+
+    private val viewModel: PostDetailViewModel by assistedViewModel { factory.create(args.postId) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
