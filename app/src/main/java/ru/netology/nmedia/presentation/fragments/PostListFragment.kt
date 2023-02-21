@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -31,6 +32,10 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
 
     private val mainViewModel by activityViewModels<MainViewModel>()
 
+    private var _adapter: MainAdapter? = null
+    private val adapter: MainAdapter
+        get() = _adapter ?: throw NullPointerException("MainAdapter is null")
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentPostListBinding.bind(view)
@@ -48,12 +53,13 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        _adapter = null
     }
 
     private fun setupRecyclerView(reqActivity: MainActivity) {
 
         val rvPostItem = binding.rvPostList
-        val adapter = MainAdapter(
+        _adapter = MainAdapter(
             reqActivity.isAuth,
             object : AdapterListener {
 
@@ -61,7 +67,11 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
                     if (reqActivity.isAuth) {
                         mainViewModel.like(post.post)
                     } else {
-                        authDialog(requireContext(), findNavController(), R.string.error_like_post).show()
+                        authDialog(
+                            requireContext(),
+                            findNavController(),
+                            R.string.error_like_post
+                        ).show()
                     }
                 }
 
@@ -111,8 +121,8 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
 
     private fun observePosts(adapter: MainAdapter) {
         mainViewModel.data.observeStateFlow(viewLifecycleOwner) { state ->
-            adapter.submitList(state.posts)
-            binding.tvEmpty.isVisible = state.empty
+            adapter.submitData(state)
+            // binding.tvEmpty.isVisible = state.empty
         }
 
         mainViewModel.state.observe(viewLifecycleOwner) { state ->
@@ -194,14 +204,20 @@ class PostListFragment : Fragment(R.layout.fragment_post_list) {
             }
         }
 
-        mainViewModel.newerCount.observeStateFlow(viewLifecycleOwner) { count ->
-            binding.btnNewPosts.isVisible = count > 0
+        adapter.loadStateFlow.observeStateFlow(viewLifecycleOwner) {
+            binding.swipeRefresh.isRefreshing = it.refresh is LoadState.Loading
+                    || it.append is LoadState.Loading
+                    || it.prepend is LoadState.Loading
+        }
+
+        mainViewModel.appAuth.state.observeStateFlow(viewLifecycleOwner) {
+            adapter.refresh()
         }
     }
 
     private fun swipeRefresh() {
         binding.swipeRefresh.setOnRefreshListener {
-            mainViewModel.refresh()
+            adapter.refresh()
         }
     }
 }
