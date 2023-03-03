@@ -2,7 +2,7 @@ package ru.netology.nmedia.presentation.rvadapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.ListAdapter
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.data.utils.bindPostItemLayout
 import ru.netology.nmedia.databinding.PostItemBinding
@@ -11,7 +11,7 @@ import ru.netology.nmedia.domain.model.PostUIModel
 class MainAdapter(
     private val isAuth: Boolean,
     private val listener: AdapterListener
-) : ListAdapter<PostUIModel, MainAdapter.MainViewHolder>(PostItemDiffUtil()) {
+) : PagingDataAdapter<PostUIModel, MainAdapter.MainViewHolder>(PostItemDiffUtil()) {
 
     inner class MainViewHolder(
         private val binding: PostItemBinding
@@ -31,7 +31,7 @@ class MainAdapter(
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
-        val post = getItem(position)
+        val post = getItem(position) ?: return
         holder.bind(post)
     }
 }

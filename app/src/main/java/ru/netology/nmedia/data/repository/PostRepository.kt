@@ -1,14 +1,14 @@
 package ru.netology.nmedia.data.repository
 
 import android.content.Intent
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import ru.netology.nmedia.domain.model.PhotoModel
 import ru.netology.nmedia.domain.model.Post
-import ru.netology.nmedia.domain.model.PostUIModel
 
 interface PostRepository {
 
-    val data: Flow<List<PostUIModel>>
+    val data: Flow<PagingData<Post>>
     suspend fun getDataAsync(): List<Post>
 
     suspend fun loadNew()

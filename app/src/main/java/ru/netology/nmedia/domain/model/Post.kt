@@ -47,3 +47,10 @@ fun Post.toPostEntity(isNew: Boolean = false): PostEntity = PostEntity(
 fun List<Post>.toPostEntityList(isNew: Boolean = false): List<PostEntity> {
     return this.map { it.toPostEntity(isNew) }
 }
+
+fun Post.toPostUiModel(isOwnerByMe: Boolean): PostUIModel = PostUIModel(
+    post = this,
+    isError = false,
+    isNew = false,
+    ownedByMe = isOwnerByMe
+)

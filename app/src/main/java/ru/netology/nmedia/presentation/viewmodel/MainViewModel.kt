@@ -2,7 +2,10 @@ package ru.netology.nmedia.presentation.viewmodel
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.*
+import androidx.paging.cachedIn
+import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,10 +15,7 @@ import kotlinx.coroutines.launch
 import ru.netology.nmedia.data.AppException
 import ru.netology.nmedia.data.auth.AppAuth
 import ru.netology.nmedia.data.repository.PostRepository
-import ru.netology.nmedia.domain.model.FeedModel
-import ru.netology.nmedia.domain.model.FeedModelState
-import ru.netology.nmedia.domain.model.PhotoModel
-import ru.netology.nmedia.domain.model.Post
+import ru.netology.nmedia.domain.model.*
 import java.io.File
 import javax.inject.Inject
 
@@ -23,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: PostRepository,
-    appAuth: AppAuth
+    val appAuth: AppAuth
 ) : ViewModel() {
 
     private val _commands = MutableSharedFlow<Command>(
@@ -44,19 +44,12 @@ class MainViewModel @Inject constructor(
         .flatMapLatest { id ->
             repository.data
                 .map { posts ->
-                    FeedModel(
-                        posts.map { it.copy(ownedByMe = it.post.authorId == id) },
-                        posts.isEmpty()
-                    )
+                    posts.map {
+                        Log.e("TAG_POST", "data: $it")
+                        it.toPostUiModel(isOwnerByMe = it.authorId == id)
+                    }
                 }
-        }
-
-    val newerCount = data.flatMapLatest {
-        repository.getNewerCount(it.posts.firstOrNull()?.post?.id ?: 0L)
-    }.catch { throwable ->
-        val e = throwable as? AppException ?: return@catch
-        _commands.tryEmit(Command.ShowErrorSnackbar(e.message))
-    }
+        }.flowOn(Dispatchers.Default).cachedIn(viewModelScope)
 
     private val _state = MutableLiveData<FeedModelState>(FeedModelState.Idle)
     val state: LiveData<FeedModelState> get() = _state
@@ -64,9 +57,9 @@ class MainViewModel @Inject constructor(
     private val _photo = MutableLiveData<PhotoModel?>(null)
     val photo: LiveData<PhotoModel?> get() = _photo
 
-    init {
+    /*init {
         loadPost()
-    }
+    }*/
 
     fun loadPost() = viewModelScope.launch {
         try {

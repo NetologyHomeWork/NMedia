@@ -1,7 +1,6 @@
 package ru.netology.nmedia.worker
 
 import android.content.Context
-import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -23,7 +22,6 @@ class SendPushTokenWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result = withContext(Dispatchers.Default) {
-        Log.e(TOKEN_KEY, "doWork: Start")
         val token = inputData.getString(TOKEN_KEY)
         try {
             val pushToken = PushToken(token ?: messaging.token.await())

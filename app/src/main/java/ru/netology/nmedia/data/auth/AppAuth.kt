@@ -72,6 +72,7 @@ class AppAuth @Inject constructor(
     @[EntryPoint InstallIn(SingletonComponent::class)]
     interface AppAuthEntryPoint {
         fun getWorkManager(): WorkManager
+
     }
 
     companion object {

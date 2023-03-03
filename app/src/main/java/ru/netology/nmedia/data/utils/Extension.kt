@@ -33,7 +33,7 @@ fun<T> Flow<T>.observeSharedFlow(lifecycleOwner: LifecycleOwner, body: (T) -> Un
     }
 }
 
-fun<T> Flow<T>.observeStateFlow(lifecycleOwner: LifecycleOwner, body: (T) -> Unit) {
+fun<T> Flow<T>.observeStateFlow(lifecycleOwner: LifecycleOwner, body: suspend (T) -> Unit) {
     lifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
         collect {
             body(it)

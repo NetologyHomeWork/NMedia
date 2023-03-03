@@ -132,6 +132,11 @@ dependencies {
     // Worker
     implementation("androidx.work:work-runtime-ktx:2.8.0")
 
+    // Paging
+    val pagingVersion = "3.1.1"
+    implementation("androidx.paging:paging-runtime:$pagingVersion")
+
+
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.5.1")
     implementation("com.google.android.material:material:1.7.0")

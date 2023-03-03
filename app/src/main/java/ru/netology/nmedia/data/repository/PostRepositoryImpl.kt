@@ -2,18 +2,18 @@ package ru.netology.nmedia.data.repository
 
 import android.content.Intent
 import android.net.Uri
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
 import ru.netology.nmedia.R
 import ru.netology.nmedia.data.AppException
 import ru.netology.nmedia.data.database.dao.PostDao
-import ru.netology.nmedia.data.database.entity.PostEntity
-import ru.netology.nmedia.data.database.entity.toPostUIList
 import ru.netology.nmedia.data.network.PostService
 import ru.netology.nmedia.data.utils.ResourceManager
 import ru.netology.nmedia.data.utils.parsingUrlLink
@@ -29,8 +29,14 @@ class PostRepositoryImpl @Inject constructor(
     private val resourceManager: ResourceManager
 ) : PostRepository {
 
-    override val data: Flow<List<PostUIModel>> =
-        postDao.getAll().map(List<PostEntity>::toPostUIList).flowOn(Dispatchers.Default)
+    override val data = Pager(
+        config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+        pagingSourceFactory = {
+            PostPagingSource(
+                postService
+            )
+        }
+    ).flow
 
     override suspend fun getDataAsync(): List<Post> = wrapException(resourceManager) {
         val response = postService.getAllPosts()
