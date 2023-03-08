@@ -1,5 +1,6 @@
 package ru.netology.nmedia.data.database.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -13,6 +14,9 @@ interface PostDao {
 
     @Query("SELECT * FROM $TABLE_NAME WHERE is_new = 0 ORDER BY id DESC")
     fun getAll(): Flow<List<PostEntity>>
+
+    @Query("SELECT * FROM $TABLE_NAME WHERE is_new = 0 ORDER BY id DESC")
+    fun getPagingSource(): PagingSource<Int, PostEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(post: PostEntity)
@@ -38,4 +42,7 @@ interface PostDao {
 
     @Query("SELECT * FROM $TABLE_NAME WHERE id = :postId")
     suspend fun findPostById(postId: Long): PostEntity?
+
+    @Query("DELETE FROM $TABLE_NAME")
+    suspend fun clear()
 }

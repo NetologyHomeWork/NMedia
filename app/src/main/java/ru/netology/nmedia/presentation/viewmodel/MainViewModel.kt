@@ -2,7 +2,6 @@ package ru.netology.nmedia.presentation.viewmodel
 
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.*
 import androidx.paging.cachedIn
 import androidx.paging.map
@@ -45,7 +44,6 @@ class MainViewModel @Inject constructor(
             repository.data
                 .map { posts ->
                     posts.map {
-                        Log.e("TAG_POST", "data: $it")
                         it.toPostUiModel(isOwnerByMe = it.authorId == id)
                     }
                 }

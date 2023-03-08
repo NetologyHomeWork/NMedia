@@ -2,18 +2,22 @@ package ru.netology.nmedia.data.repository
 
 import android.content.Intent
 import android.net.Uri
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
+import androidx.paging.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
 import ru.netology.nmedia.R
 import ru.netology.nmedia.data.AppException
 import ru.netology.nmedia.data.database.dao.PostDao
+import ru.netology.nmedia.data.database.dao.PostRemoteKeyDao
+import ru.netology.nmedia.data.database.db.PostDatabase
+import ru.netology.nmedia.data.database.entity.PostEntity
+import ru.netology.nmedia.data.database.entity.toPost
 import ru.netology.nmedia.data.network.PostService
 import ru.netology.nmedia.data.utils.ResourceManager
 import ru.netology.nmedia.data.utils.parsingUrlLink
@@ -26,17 +30,18 @@ import javax.inject.Singleton
 class PostRepositoryImpl @Inject constructor(
     private val postService: PostService,
     private val postDao: PostDao,
-    private val resourceManager: ResourceManager
+    private val resourceManager: ResourceManager,
+    postRemoteKeyDao: PostRemoteKeyDao,
+    appDb: PostDatabase
 ) : PostRepository {
 
-    override val data = Pager(
+    @OptIn(ExperimentalPagingApi::class)
+    override val data: Flow<PagingData<Post>> = Pager(
         config = PagingConfig(pageSize = 10, enablePlaceholders = false),
-        pagingSourceFactory = {
-            PostPagingSource(
-                postService
-            )
-        }
+        pagingSourceFactory = { postDao.getPagingSource() },
+        remoteMediator = PostRemoteMediator(apiService = postService, postDao = postDao, postRemoteKeyDao = postRemoteKeyDao, appDb = appDb)
     ).flow
+        .map { posts -> posts.map(PostEntity::toPost) }
 
     override suspend fun getDataAsync(): List<Post> = wrapException(resourceManager) {
         val response = postService.getAllPosts()
